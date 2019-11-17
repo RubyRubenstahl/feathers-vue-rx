@@ -1,10 +1,35 @@
 <template>
   <section>
+    <template v-if="!initialLoadComplete && !error && pending">
+      <slot name="loading" :context="context" :data="data" :service="service"
+        >Default loading message</slot
+      >
+    </template>
+
+    <template v-if="initialLoadComplete && !empty">
+      <slot name="loaded" :context="context" :data="data" :service="service"
+        >Default Loaded Slot</slot
+      >
+    </template>
+
+    <template v-if="!!error">
+      <slot name="error" :context="context" :data="data" :service="service">
+        <span style="color: red">ERROR:</span>{{ error.message }}</slot
+      >
+    </template>
+
+    <template v-if="empty">
+      <slot name="empty" :context="context" :data="data" :service="service"
+        >Default Empty Slot</slot
+      >
+    </template>
+
     <slot></slot>
   </section>
 </template>
   <script>
   import { isNumber } from "util";
+
   const isPaginated = res =>
     isNumber(res.total) && isNumber(res.skip) && isNumber(res.limit);
 
@@ -35,7 +60,6 @@
     },
     mounted() {
       this.updateContext();
-      this.fetchData();
     },
     methods: {
       updateContext() {
@@ -48,10 +72,18 @@
         };
       },
       fetchData() {
+        this.updateContext();
         this.pending = true;
+        const service = this.app.service(this.service);
 
-        this.app
-          .service(this.service)
+        if (!service) {
+          this.error = new Error(`Service ${this.service} not found`);
+          this.pending = false;
+          this.data = null;
+          this.initialLoadComplete = false;
+          return;
+        }
+        service
           .find(this.context.params)
           .then(res => {
             setTimeout(() => {
@@ -59,17 +91,14 @@
               this.intitialLoadComplete = true;
               this.paginated = isPaginated(res);
               this.data = this.paginated ? res.data : res;
-              this.updating = false;
               this.pending = false;
               this.initialLoadComplete = true;
             }, 2000);
           })
-
           .catch(err => {
             this.history.push(["error", err, this]);
             this.error = err;
             this.pending = false;
-            this.updating = false;
             console.error(`Error in ${this.service} find subscription`, err);
           });
       }
@@ -83,11 +112,24 @@
         history: [],
         querySubscription: null,
         timeout: false,
-        data: {},
+        data: null,
         paginated: null
       };
     },
 
-    computed: {}
+    computed: {
+      empty() {
+        if (!this.initialLoadComplete) {
+          return null;
+        }
+        return !!this.data && this.data.length === 0;
+      }
+    },
+    watch: {
+      query: {
+        handler: "fetchData",
+        immediate: true
+      }
+    }
   };
 </script>
