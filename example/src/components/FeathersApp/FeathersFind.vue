@@ -35,7 +35,7 @@
 
   export default {
     name: "feathers-find",
-    inject: ["app"],
+  inject: ["feathers"],
     props: {
       query: {
         type: Object,
@@ -123,6 +123,9 @@
           return null;
         }
         return !!this.data && this.data.length === 0;
+    },
+    app() {
+      return this.feathers.app;
       }
     },
     watch: {

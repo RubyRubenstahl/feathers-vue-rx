@@ -13,14 +13,24 @@
       }
     },
 
-    mounted() {},
+  },
     data() {
-      return {};
+    return {
+      app: feathers()
+    };
+  },
+  computed: {
+    feathers() {
+      return {
+        app: this.app
+      };
+    }
     },
     provide() {
-      return { app: this.app };
+    return {
+      feathers: this.feathers
+    };
     },
-    methods: {},
-    computed: {}
+  methods: {}
   };
 </script>
