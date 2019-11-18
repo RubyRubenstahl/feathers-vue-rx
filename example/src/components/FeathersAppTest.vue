@@ -1,6 +1,8 @@
 <template>
-  <FeathersApp :app="app">
+  <FeathersApp host="http://localhost:3030">
     <h1>FeathersApp Test</h1>
+
+    <FeathersLogin />
 
     <div class="service-status">
       <div>
@@ -24,50 +26,35 @@
         <h2>missing-service</h2>
         <FeathersFind service="missing-service"> </FeathersFind>
       </div>
+
+      <div>
+        <h2>Users</h2>
+        <FeathersFind service="users">
+          <template slot="loading">Custom Loading Message...</template>
+          <template slot="loaded" slot-scope="{ data: users }">
+            <ul v-for="user in users" :key="user.username">
+              <li>{{ user.username }}</li>
+            </ul>
+          </template>
+        </FeathersFind>
+      </div>
     </div>
   </FeathersApp>
 </template>
 
 <script>
-  import "./FeathersApp";
-  import feathers from "@feathersjs/feathers";
-  import feathersMemory from "feathers-memory";
+import "../../../src";
 
-  const app = feathers();
-  app.use(
-    "/dogs",
-    feathersMemory({
-      store: {
-        spot: {
-          name: "Spot",
-          breed: "Shih Tzu"
-        },
-        wendy: {
-          name: "Wendy",
-          breed: "lovemonster"
-        },
-        bear: {
-          name: "Bear",
-          breed: "bear"
-        }
-      }
-    })
-  );
-
-  app.use("/empty-service", feathersMemory({}));
-
-  export default {
-    name: "FeathersAppTest",
-    data: function() {
-      return {
-        app: app
-      };
-    }
-  };
+export default {
+  name: "FeathersAppTest",
+  data: function() {
+    return {};
+  }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style >
+<style>
 .service-status {
   display: flex;
 
