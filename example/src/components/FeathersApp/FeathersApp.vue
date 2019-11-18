@@ -46,13 +46,20 @@ export default {
   },
   data() {
     return {
-      app: feathers()
+      app: feathers(),
+      authenticating: false,
+      user: null,
+      connected: false
     };
   },
   computed: {
     feathers() {
       return {
-        app: this.app
+        app: this.app,
+        authenticating: this.authenticating,
+        user: this.user,
+        connected: this.connected,
+        login: this.login
       };
     }
   },
@@ -61,6 +68,25 @@ export default {
       feathers: this.feathers
     };
   },
-  methods: {}
+  methods: {
+    async login(credentials) {
+      console.log("Logging in");
+
+      this.authenticating = true;
+      return this.app
+        .authenticate({ strategy: this.strategy, ...credentials })
+        .then(user => {
+          console.log("Login successful");
+          this.user = user;
+          this.authenticating = false;
+          return user;
+        })
+        .catch(err => {
+          console.error(`Login failed: ${err.message}`);
+          this.authenticating = false;
+          throw err;
+        });
+    }
+  }
 };
 </script>

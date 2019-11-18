@@ -2,6 +2,8 @@
   <FeathersApp host="http://localhost:3030">
     <h1>FeathersApp Test</h1>
 
+    <FeathersLogin />
+
     <div class="service-status">
       <div>
         <h2>dogs</h2>
