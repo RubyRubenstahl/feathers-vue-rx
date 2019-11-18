@@ -41,7 +41,8 @@ export default {
         "authenticated",
         "user",
         "connected",
-        "login"
+        "login",
+        "logout"
       ]
     })
   ],
@@ -49,6 +50,9 @@ export default {
     if (this.host) {
       const socket = io(this.host);
       this.app.configure(socketio(socket));
+      socket.on("connect", () => {
+        this.reAuthenticate();
+      });
     }
 
     this.app.configure(auth({}));
@@ -77,6 +81,7 @@ export default {
           this.user = res.user;
           this.authenticating = false;
           this.$set(this, "authenticated", true);
+          localStorage.setItem("username", credentials.username);
           return res.user;
         })
         .catch(err => {
@@ -86,12 +91,31 @@ export default {
 
           throw err;
         });
+    },
+    reAuthenticate() {
+      console.log("Attempting to re-authenticate");
+      this.authenticating = true;
+      this.authenticated = false;
+      return this.app
+        .reAuthenticate()
+        .then(res => {
+          console.log("Login successful");
+          this.user = res.user;
+          this.authenticating = false;
+          this.$set(this, "authenticated", true);
+          return res.user;
+        })
+        .catch(err => {
+          this.authenticating = false;
+          this.authenticated = false;
+          throw err;
+        });
+    },
+    async logout() {
+      this.app.logout();
+      this.authenticated = false;
+      this.authenticating = false;
     }
-  },
-  async logout() {
-    this.app.logout();
-    this.authenticated = false;
-    this.authenticating = false;
   }
 };
 </script>

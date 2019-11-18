@@ -39,7 +39,10 @@ export default {
       default: "local"
     }
   },
-  mounted() {},
+  mounted() {
+    const username = localStorage.getItem("username");
+    this.credentials.username = username;
+  },
   methods: {},
   data() {
     return {
