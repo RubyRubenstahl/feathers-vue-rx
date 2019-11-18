@@ -9,7 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@feathersjs/authentication-client": "^4.3.11",
     "@feathersjs/feathers": "^4.3.11",
-    "feathers-memory": "^4.1.0"
+    "@feathersjs/socketio-client": "^4.3.11",
+    "feathers-memory": "^4.1.0",
+    "feathers-reactive": "^0.8.1",
+    "socket.io-client": "^2.3.0"
   }
 }
