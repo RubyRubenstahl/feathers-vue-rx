@@ -30,7 +30,6 @@
       <div>
         <h2>Users</h2>
         <FeathersFind service="users">
-          <template slot="loading">Custom Loading Message...</template>
           <template slot="loaded" slot-scope="{ data: users }">
             <ul v-for="user in users" :key="user.username">
               <li>{{ user.username }}</li>
