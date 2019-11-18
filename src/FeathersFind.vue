@@ -1,27 +1,27 @@
 <template>
   <section>
     <template v-if="!initialLoadComplete && !error && pending">
-      <slot name="loading" :context="context" :data="data" :service="service"
-        >Default loading message</slot
-      >
+      <slot name="loading" :context="context" :data="data" :service="service">
+        <component :is="feathers.defaultPendingComponent" />
+      </slot>
     </template>
 
     <template v-if="initialLoadComplete && !empty">
-      <slot name="loaded" :context="context" :data="data" :service="service"
-        >Default Loaded Slot</slot
-      >
+      <slot name="loaded" :context="context" :data="data" :service="service">
+        {{ data }}
+      </slot>
     </template>
 
     <template v-if="!!error">
       <slot name="error" :context="context" :data="data" :service="service">
-        <span style="color: red">ERROR:</span>{{ error.message }}</slot
-      >
+        <component :is="feathers.defaultErrorComponent" :error="error" />
+      </slot>
     </template>
 
     <template v-if="empty">
       <slot name="empty" :context="context" :data="data" :service="service"
-        >Default Empty Slot</slot
-      >
+        ><component :is="feathers.defaultEmptyComponent"
+      /></slot>
     </template>
     <slot></slot>
   </section>

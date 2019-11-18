@@ -10,6 +10,10 @@ import socketio from "@feathersjs/socketio-client";
 import io from "socket.io-client";
 import auth from "@feathersjs/authentication-client";
 import { ReactiveProvideMixin } from "vue-reactive-provide";
+import FeathersEmpty from "./FeathersEmpty";
+import FeathersError from "./FeathersError";
+import FeathersPending from "./FeathersPending";
+
 const dogs = {
   spot: {
     name: "Spot",
@@ -30,6 +34,18 @@ export default {
   props: {
     host: {
       type: String
+    },
+    defaultEmptyComponent: {
+      type: Object,
+      default: () => FeathersEmpty
+    },
+    defaultErrorComponent: {
+      type: Object,
+      default: () => FeathersError
+    },
+    defaultPendingComponent: {
+      type: Object,
+      default: () => FeathersPending
     }
   },
   mixins: [
@@ -42,7 +58,10 @@ export default {
         "user",
         "connected",
         "login",
-        "logout"
+        "logout",
+        "defaultEmptyComponent",
+        "defaultErrorComponent",
+        "defaultPendingComponent"
       ]
     })
   ],
