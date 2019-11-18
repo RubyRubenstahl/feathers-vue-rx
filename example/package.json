@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:RubyRubenstahl/feathers-vue-rx.git"
+  },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
