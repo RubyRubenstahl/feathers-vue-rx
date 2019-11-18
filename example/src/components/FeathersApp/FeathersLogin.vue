@@ -1,20 +1,28 @@
 <template>
   <section>
     <slot>
-      <Form name="login">
-        <label>
-          Username
-          <input type="text" v-model="credentials.username" />
-        </label>
+      <div v-if="!feathers.authenticated">
+        <Form name="form">
+          <label>
+            Username
+            <input type="text" v-model="credentials.username" />
+          </label>
 
-        <label>
-          Password
-          <input type="password" v-model="credentials.password" />
-        </label>
-        <button type="submit" @click.prevent="login(credentials)">
-          Log In
+          <label>
+            Password
+            <input type="password" v-model="credentials.password" />
+          </label>
+          <button type="submit" @click.prevent="feathers.login(credentials)">
+            Log In
+          </button>
+        </Form>
+      </div>
+      <div v-if="feathers.authenticated">
+        {{ feathers.user.username }}
+        <button type="submit" @click.prevent="feathers.logout()">
+          Log Out
         </button>
-      </Form>
+      </div>
     </slot>
     <template v-if="error">
       <slot name="error" :error="error">ERROR: {{ error.message }}</slot>
@@ -32,21 +40,7 @@ export default {
     }
   },
   mounted() {},
-  methods: {
-    login(credentials) {
-      this.error = null;
-      const authDetails = { strategy: this.strategy, ...credentials };
-      this.feathers
-        .login(authDetails)
-        .then(user => {
-          console.log(user);
-        })
-        .catch(err => {
-          console.log("Oho!");
-          this.error = err;
-        });
-    }
-  },
+  methods: {},
   data() {
     return {
       error: null,

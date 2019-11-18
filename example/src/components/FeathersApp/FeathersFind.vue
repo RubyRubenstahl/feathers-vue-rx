@@ -23,7 +23,6 @@
         >Default Empty Slot</slot
       >
     </template>
-
     <slot></slot>
   </section>
 </template>
@@ -97,7 +96,7 @@ export default {
         })
         .catch(err => {
           this.history.push(["error", err, this]);
-          this.error = err;
+          this.$set(this, "error", err);
           this.pending = false;
           console.error(`Error in ${this.service} find subscription`, err);
         });
@@ -132,6 +131,16 @@ export default {
     query: {
       handler: "fetchData",
       immediate: true
+    },
+    "feathers.authenticated"(isAuthenticated) {
+      if (
+        isAuthenticated &&
+        this.error &&
+        this.error.className === "not-authenticated"
+      ) {
+        this.error = null;
+        this.fetchData();
+      }
     }
   }
 };

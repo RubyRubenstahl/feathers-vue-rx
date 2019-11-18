@@ -9,7 +9,7 @@ import feathersMemory from "feathers-memory";
 import socketio from "@feathersjs/socketio-client";
 import io from "socket.io-client";
 import auth from "@feathersjs/authentication-client";
-
+import { ReactiveProvideMixin } from "vue-reactive-provide";
 const dogs = {
   spot: {
     name: "Spot",
@@ -24,7 +24,7 @@ const dogs = {
     breed: "bear"
   }
 };
-
+import Vue from "vue";
 export default {
   name: "feathers-app",
   props: {
@@ -32,7 +32,19 @@ export default {
       type: String
     }
   },
-
+  mixins: [
+    ReactiveProvideMixin({
+      name: "feathers",
+      include: [
+        "app",
+        "authenticating",
+        "authenticated",
+        "user",
+        "connected",
+        "login"
+      ]
+    })
+  ],
   created() {
     if (this.host) {
       const socket = io(this.host);
@@ -48,45 +60,38 @@ export default {
     return {
       app: feathers(),
       authenticating: false,
+      authenticated: false,
       user: null,
       connected: false
     };
   },
-  computed: {
-    feathers() {
-      return {
-        app: this.app,
-        authenticating: this.authenticating,
-        user: this.user,
-        connected: this.connected,
-        login: this.login
-      };
-    }
-  },
-  provide() {
-    return {
-      feathers: this.feathers
-    };
-  },
   methods: {
-    async login(credentials) {
+    async login(credentials, strategy = "local") {
       console.log("Logging in");
-
       this.authenticating = true;
+      this.authenticated = false;
       return this.app
-        .authenticate({ strategy: this.strategy, ...credentials })
-        .then(user => {
+        .authenticate({ strategy, ...credentials })
+        .then(res => {
           console.log("Login successful");
-          this.user = user;
+          this.user = res.user;
           this.authenticating = false;
-          return user;
+          this.$set(this, "authenticated", true);
+          return res.user;
         })
         .catch(err => {
           console.error(`Login failed: ${err.message}`);
           this.authenticating = false;
+          this.authenticated = false;
+
           throw err;
         });
     }
+  },
+  async logout() {
+    this.app.logout();
+    this.authenticated = false;
+    this.authenticating = false;
   }
 };
 </script>
