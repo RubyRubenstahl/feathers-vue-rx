@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import "./FeathersApp";
+import "../../../src";
 
 export default {
   name: "FeathersAppTest",
