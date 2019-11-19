@@ -1,5 +1,9 @@
 <template>
-  <span>Connected:{{ feathers.connected }}</span>
+  <div>
+    <span>Connected:{{ feathers.connected }}</span
+    ><br />
+    <span>Online:{{ feathers.online }}</span>
+  </div>
 </template>
 <script>
 export default {

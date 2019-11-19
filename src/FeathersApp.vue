@@ -66,7 +66,8 @@ export default {
         "logout",
         "defaultEmptyComponent",
         "defaultErrorComponent",
-        "defaultPendingComponent"
+        "defaultPendingComponent",
+        "online"
       ]
     })
   ],
@@ -82,6 +83,9 @@ export default {
 
     this.app.use("/dogs", feathersMemory({ store: dogs }));
     this.app.use("/empty-service", feathersMemory({}));
+
+    window.addEventListener("offline", () => (this.online = false));
+    window.addEventListener("online", () => (this.online = true));
   },
   mounted() {
     Vue.prototype.$feathers = this.feathers;
@@ -92,7 +96,8 @@ export default {
       authenticating: false,
       authenticated: false,
       user: null,
-      connected: false
+      connected: false,
+      online: navigator ? navigator.onLine : true
     };
   },
   methods: {

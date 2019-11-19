@@ -37,6 +37,22 @@
           </template>
         </FeathersFind>
       </div>
+
+      <div>
+        <h2>Users Auth Only</h2>
+        <FeathersUnauthenticated>
+          This content will only display when a user is authenticated
+        </FeathersUnauthenticated>
+        <FeathersAuthenticated>
+          <FeathersFind service="users">
+            <template slot="loaded" slot-scope="{ data: users }">
+              <ul v-for="user in users" :key="user.username">
+                <li>{{ user.username }}</li>
+              </ul>
+            </template>
+          </FeathersFind>
+        </FeathersAuthenticated>
+      </div>
     </div>
   </FeathersApp>
 </template>
@@ -57,7 +73,7 @@ export default {
 <style>
 .service-status {
   display: flex;
-
+  flex-wrap: wrap;
   color: #444;
 }
 
