@@ -1,7 +1,9 @@
 <template>
-  <div id="app">
-    <FeathersAppTest msg="Welcome to Your Vue.js App" />
-  </div>
+  <FeathersApp host="http://localhost:3030">
+    <div id="app">
+      <FeathersAppTest msg="Welcome to Your Vue.js App" />
+    </div>
+  </FeathersApp>
 </template>
 
 <script>
