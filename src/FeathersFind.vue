@@ -28,7 +28,7 @@
 </template>
 <script>
 import { isNumber } from "util";
-
+import isEqual from "lodash.isequal";
 const isPaginated = res =>
   isNumber(res.total) && isNumber(res.skip) && isNumber(res.limit);
 
@@ -60,6 +60,9 @@ export default {
   mounted() {
     this.updateContext();
   },
+  componentWillUnmount() {
+    this.querySubscription.unsubscribe();
+  },
   methods: {
     updateContext() {
       this.context = {
@@ -70,7 +73,7 @@ export default {
         }
       };
     },
-    fetchData() {
+    runQuery() {
       this.updateContext();
       this.pending = true;
       const service = this.app.service(this.service);
@@ -82,24 +85,27 @@ export default {
         this.initialLoadComplete = false;
         return;
       }
-      service
+      this.querySubscription = service
+        .watch(this.ervice)
         .find(this.context.params)
-        .then(res => {
-          setTimeout(() => {
-            this.history.push(["response", res, this]);
-            this.intitialLoadComplete = true;
-            this.paginated = isPaginated(res);
-            this.data = this.paginated ? res.data : res;
+        .subscribe(
+          res => {
+            setTimeout(() => {
+              this.history.push(["response", res, this]);
+              this.intitialLoadComplete = true;
+              this.paginated = isPaginated(res);
+              this.data = this.paginated ? res.data : res;
+              this.pending = false;
+              this.initialLoadComplete = true;
+            }, 2000);
+          },
+          err => {
+            this.history.push(["error", err, this]);
+            this.$set(this, "error", err);
             this.pending = false;
-            this.initialLoadComplete = true;
-          }, 2000);
-        })
-        .catch(err => {
-          this.history.push(["error", err, this]);
-          this.$set(this, "error", err);
-          this.pending = false;
-          console.error(`Error in ${this.service} find subscription`, err);
-        });
+            console.error(`Error in ${this.service} find subscription`, err);
+          }
+        );
     }
   },
   data() {
@@ -129,7 +135,7 @@ export default {
   },
   watch: {
     query: {
-      handler: "fetchData",
+      handler: "runQuery",
       immediate: true
     },
     "feathers.authenticated"(isAuthenticated) {
@@ -139,8 +145,15 @@ export default {
         this.error.className === "not-authenticated"
       ) {
         this.error = null;
-        this.fetchData();
+        this.runQuery();
       }
+    }
+  },
+  query(newQuery, prevQuery) {
+    if (!isEqual(newQuery, prevQuery)) {
+      this.updating = true;
+      this.querySubscription.unsubscribe();
+      this.runQuery();
     }
   }
 };

@@ -1,6 +1,6 @@
 <template>
   <div class="lds-pending">
-    <div :style="`background-color: ${color}`"></div>
+    <div></div>
     <div></div>
     <div></div>
   </div>
