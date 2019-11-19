@@ -8,27 +8,43 @@
       <div>
         <h2>dogs</h2>
         <div style="display:flex; flex-direction:column;align-items:flex-start">
-          <label>
-            Name
-            <input type="name" v-model="newDog.name" />
-          </label>
-          <label>
-            Breed
-            <input type="breed" v-model="newDog.breed" />
-          </label>
-          <button
-            style="display:block;width:100%"
-            @click="feathers.app.service('dogs').create(newDog)"
+          <FeathersEdit
+            service="dogs"
+            :item="editDog"
+            :defaultItem="{ breed: 'shih tzu' }"
+            idField="id"
           >
-            Save
-          </button>
+            <template
+              slot="form"
+              slot-scope="{ item, save, saving, reset, patch, isNewItem }"
+            >
+              <label>
+                Name
+                <input type="name" v-model="item.name" />
+              </label>
+              <label>
+                Breed
+                <input type="breed" v-model="item.breed" />
+              </label>
+              <button style="display:block;width:100%" @click="reset">
+                Reset
+              </button>
+              <button
+                style="display:block;width:100%"
+                @click="save"
+                :disabled="saving"
+              >
+                {{ isNewItem ? "Create" : "Update" }}
+              </button>
+            </template>
+          </FeathersEdit>
         </div>
         <hr />
         <FeathersFind service="dogs">
           <template slot="loading">Custom Loading Message...</template>
           <template slot="loaded" slot-scope="{ data: dogs }">
             <ul v-for="dog in dogs" :key="dog.name">
-              <li>{{ dog.name }}</li>
+              <li>{{ dog.name }} <a @click="editDog = dog">Edit</a></li>
             </ul>
           </template>
         </FeathersFind>
@@ -61,10 +77,38 @@
           This content will only display when a user is authenticated
         </FeathersUnauthenticated>
         <FeathersAuthenticated>
+          <FeathersEdit service="users" :item="editUser" idField="_id">
+            <template
+              slot="form"
+              slot-scope="{ item, save, saving, reset, patch, isNewItem }"
+            >
+              <label>
+                Name
+                <input type="name" v-model="item.username" />
+              </label>
+              <label>
+                Breed
+                <input type="breed" v-model="item.email" />
+              </label>
+              <button style="display:block;width:100%" @click="reset">
+                Reset
+              </button>
+              <button
+                style="display:block;width:100%"
+                @click="save"
+                :disabled="saving"
+              >
+                {{ isNewItem ? "Create" : "Update" }}
+              </button>
+            </template>
+          </FeathersEdit>
+
           <FeathersFind service="users">
             <template slot="loaded" slot-scope="{ data: users }">
               <ul v-for="user in users" :key="user.username">
-                <li>{{ user.username }}</li>
+                <li>
+                  {{ user.username }} <a @click="editUser = user">Edit</a>
+                </li>
               </ul>
             </template>
           </FeathersFind>
@@ -81,12 +125,11 @@ export default {
   name: "FeathersAppTest",
   inject: ["feathers"],
   components: { ConnectionStatus },
+
   data: function() {
     return {
-      newDog: {
-        name: null,
-        breed: null
-      }
+      editDog: null,
+      editUser: null
     };
   }
 };
