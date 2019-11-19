@@ -13,6 +13,7 @@ import { ReactiveProvideMixin } from "vue-reactive-provide";
 import FeathersEmpty from "./FeathersEmpty";
 import FeathersError from "./FeathersError";
 import FeathersPending from "./FeathersPending";
+import reactive from "feathers-reactive";
 
 const dogs = {
   spot: {
@@ -34,6 +35,10 @@ export default {
   props: {
     host: {
       type: String
+    },
+    defaultIdField: {
+      type: String,
+      default: "_id"
     },
     defaultEmptyComponent: {
       type: Object,
@@ -69,23 +74,17 @@ export default {
     if (this.host) {
       const socket = io(this.host);
       this.app.configure(socketio(socket));
-      socket.on("connect", () => {
-        this.connected = true;
-        this.reAuthenticate();
-      });
-
-      socket.on("disconnect", () => {
-        this.connected = false;
-      });
-      socket.on("error", () => {
-        this.connected = false;
-      });
+      this.registerSocketEventHandlers(socket);
     }
 
+    this.app.configure(reactive({ idField: this.defaultIdField }));
     this.app.configure(auth({}));
 
     this.app.use("/dogs", feathersMemory({ store: dogs }));
     this.app.use("/empty-service", feathersMemory({}));
+  },
+  mounted() {
+    Vue.prototype.$feathers = this.feathers;
   },
   data() {
     return {
@@ -142,6 +141,18 @@ export default {
       this.app.logout();
       this.authenticated = false;
       this.authenticating = false;
+    },
+    registerSocketEventHandlers(socket) {
+      socket.on("connect", () => {
+        this.connected = true;
+        this.reAuthenticate();
+      });
+      socket.on("disconnect", () => {
+        this.connected = false;
+      });
+      socket.on("error", () => {
+        this.connected = false;
+      });
     }
   }
 };
