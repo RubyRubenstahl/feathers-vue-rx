@@ -1,5 +1,5 @@
 <template>
-  <FeathersApp host="http://localhost:3030">
+  <section>
     <h1>FeathersApp Test</h1>
     <ConnectionStatus />
     <FeathersLogin />
@@ -7,6 +7,23 @@
     <div class="service-status">
       <div>
         <h2>dogs</h2>
+        <div style="display:flex; flex-direction:column;align-items:flex-start">
+          <label>
+            Name
+            <input type="name" v-model="newDog.name" />
+          </label>
+          <label>
+            Breed
+            <input type="breed" v-model="newDog.breed" />
+          </label>
+          <button
+            style="display:block;width:100%"
+            @click="feathers.app.service('dogs').create(newDog)"
+          >
+            Save
+          </button>
+        </div>
+        <hr />
         <FeathersFind service="dogs">
           <template slot="loading">Custom Loading Message...</template>
           <template slot="loaded" slot-scope="{ data: dogs }">
@@ -54,7 +71,7 @@
         </FeathersAuthenticated>
       </div>
     </div>
-  </FeathersApp>
+  </section>
 </template>
 
 <script>
@@ -62,9 +79,15 @@ import "../../../src";
 import ConnectionStatus from "./ConnectionStatus";
 export default {
   name: "FeathersAppTest",
+  inject: ["feathers"],
   components: { ConnectionStatus },
   data: function() {
-    return {};
+    return {
+      newDog: {
+        name: null,
+        breed: null
+      }
+    };
   }
 };
 </script>
