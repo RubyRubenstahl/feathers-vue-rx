@@ -5,7 +5,6 @@
 </template>
 <script>
 import feathers from "@feathersjs/feathers";
-import feathersMemory from "feathers-memory";
 import socketio from "@feathersjs/socketio-client";
 import io from "socket.io-client";
 import auth from "@feathersjs/authentication-client";
@@ -15,20 +14,6 @@ import FeathersError from "./FeathersError";
 import FeathersPending from "./FeathersPending";
 import reactive from "feathers-reactive";
 
-const dogs = {
-  spot: {
-    name: "Spot",
-    breed: "Shih Tzu"
-  },
-  wendy: {
-    name: "Wendy",
-    breed: "lovemonster"
-  },
-  bear: {
-    name: "Bear",
-    breed: "bear"
-  }
-};
 import Vue from "vue";
 export default {
   name: "feathers-app",
@@ -80,9 +65,6 @@ export default {
 
     this.app.configure(reactive({ idField: this.defaultIdField }));
     this.app.configure(auth({}));
-
-    this.app.use("/dogs", feathersMemory({ store: dogs }));
-    this.app.use("/empty-service", feathersMemory({}));
 
     window.addEventListener("offline", () => (this.online = false));
     window.addEventListener("online", () => (this.online = true));

@@ -121,11 +121,35 @@
 <script>
 import "../../../src";
 import ConnectionStatus from "./ConnectionStatus";
+import feathersMemory from "feathers-memory";
+
+const dogs = {
+  spot: {
+    id: "1",
+    name: "Spot",
+    breed: "Shih Tzu"
+  },
+  wendy: {
+    id: 2,
+    name: "Wendy",
+    breed: "lovemonster"
+  },
+  bear: {
+    id: 3,
+    name: "Bear",
+    breed: "bear"
+  }
+};
+
 export default {
   name: "FeathersAppTest",
   inject: ["feathers"],
   components: { ConnectionStatus },
 
+  created() {
+    this.feathers.app.use("/dogs", feathersMemory({ store: dogs, id: "id" }));
+    this.feathers.app.use("/empty-service", feathersMemory({}));
+  },
   data: function() {
     return {
       editDog: null,
