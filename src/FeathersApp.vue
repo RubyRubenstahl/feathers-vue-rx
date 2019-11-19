@@ -70,7 +70,15 @@ export default {
       const socket = io(this.host);
       this.app.configure(socketio(socket));
       socket.on("connect", () => {
+        this.connected = true;
         this.reAuthenticate();
+      });
+
+      socket.on("disconnect", () => {
+        this.connected = false;
+      });
+      socket.on("error", () => {
+        this.connected = false;
       });
     }
 

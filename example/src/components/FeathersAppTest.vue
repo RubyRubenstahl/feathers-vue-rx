@@ -1,7 +1,7 @@
 <template>
   <FeathersApp host="http://localhost:3030">
     <h1>FeathersApp Test</h1>
-
+    <ConnectionStatus />
     <FeathersLogin />
 
     <div class="service-status">
@@ -43,9 +43,10 @@
 
 <script>
 import "../../../src";
-
+import ConnectionStatus from "./ConnectionStatus";
 export default {
   name: "FeathersAppTest",
+  components: { ConnectionStatus },
   data: function() {
     return {};
   }
