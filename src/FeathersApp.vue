@@ -45,6 +45,7 @@ export default {
         "app",
         "authenticating",
         "authenticated",
+        "authenticationError",
         "user",
         "connected",
         "login",
@@ -79,7 +80,8 @@ export default {
       authenticated: false,
       user: null,
       connected: false,
-      online: navigator ? navigator.onLine : true
+      online: navigator ? navigator.onLine : true,
+      authenticationError: null
     };
   },
   methods: {
@@ -101,8 +103,7 @@ export default {
           console.error(`Login failed: ${err.message}`);
           this.authenticating = false;
           this.authenticated = false;
-
-          throw err;
+          this.authenticationError = err;
         });
     },
     reAuthenticate() {
