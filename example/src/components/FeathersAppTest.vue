@@ -10,7 +10,7 @@
         <div style="display:flex; flex-direction:column;align-items:flex-start">
           <FeathersEdit
             service="dogs"
-            :item="editDog"
+            :id="editDog"
             :defaultItem="{ breed: 'shih tzu' }"
             idField="id"
           >
@@ -44,7 +44,7 @@
           <template slot="loading">Custom Loading Message...</template>
           <template slot="loaded" slot-scope="{ data: dogs }">
             <ul v-for="dog in dogs" :key="dog.name">
-              <li>{{ dog.name }} <a @click="editDog = dog">Edit</a></li>
+              <li>{{ dog.name }} <a @click="editDog = dog.id">Edit</a></li>
             </ul>
           </template>
         </FeathersFind>
@@ -64,7 +64,7 @@
         <h2>Users</h2>
         <FeathersFind service="users">
           <template slot="loaded" slot-scope="{ data: users }">
-            <ul v-for="user in users" :key="user.username">
+            <ul v-for="user in users" :key="user._id">
               <li>{{ user.username }}</li>
             </ul>
           </template>
@@ -77,7 +77,7 @@
           This content will only display when a user is authenticated
         </FeathersUnauthenticated>
         <FeathersAuthenticated>
-          <FeathersEdit service="users" :item="editUser" idField="_id">
+          <FeathersEdit service="users" :id="editUser" idField="_id">
             <template
               slot="form"
               slot-scope="{ item, save, saving, reset, patch, isNewItem }"
@@ -105,9 +105,10 @@
 
           <FeathersFind service="users">
             <template slot="loaded" slot-scope="{ data: users }">
-              <ul v-for="user in users" :key="user.username">
+              <ul v-for="user in users" :key="user._id">
                 <li>
-                  {{ user.username }} <a @click="editUser = user">Edit</a>
+                  {{ user.username }}
+                  <a href="#" @click.prevent="editUser = user._id">Edit</a>
                 </li>
               </ul>
             </template>
