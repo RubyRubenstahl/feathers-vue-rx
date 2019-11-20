@@ -29,6 +29,8 @@
 <script>
 import { isNumber } from "util";
 import isEqual from "lodash.isequal";
+import uniqBy from "lodash.uniqby";
+
 const isPaginated = res =>
   isNumber(res.total) && isNumber(res.skip) && isNumber(res.limit);
 
@@ -95,9 +97,14 @@ export default {
               this.intitialLoadComplete = true;
               this.paginated = isPaginated(res);
               this.data = this.paginated ? res.data : res;
+
+              // Prevent duplicates that can appear in some situations
+              if (Array.isArray(this.data)) {
+                this.data = uniqBy(this.data, this.idField);
+              }
               this.pending = false;
               this.initialLoadComplete = true;
-            }, 2000);
+            }, 0);
           },
           err => {
             this.history.push(["error", err, this]);
