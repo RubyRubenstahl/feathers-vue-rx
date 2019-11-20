@@ -1,13 +1,15 @@
 <template>
-  <div>
-    <template v-if="!!privateItem">
+  <div style="display:contents">
+    <template v-if="!!item">
       <slot
         name="form"
         :save="save"
-        :item="privateItem"
+        :item="item"
         :reset="reset"
         :isNewItem="isNewItem"
         :saving="saving"
+        :fetchingItem="fetchingItem"
+        :fetchError="fetchError"
       >
         Edit
       </slot>
@@ -29,16 +31,15 @@ export default {
   inject: ["feathers"],
   data() {
     return {
-      privateItem: null,
+      item: null,
       saving: false,
       error: null,
-      loading: false
+      loading: false,
+      fetchingItem: false,
+      fetchError: null
     };
   },
   props: {
-    item: {
-      type: Object
-    },
     id: {
       type: String
     },
@@ -61,7 +62,7 @@ export default {
   },
   computed: {
     isNewItem() {
-      return !this.privateItem || !this.privateItem[this.idField];
+      return !this.item || !this.item[this.idField];
     }
   },
   methods: {
@@ -72,24 +73,44 @@ export default {
         this.patchItem();
       }
     },
+    fetchItem() {
+      this.fetchingItem = true;
+      this.fetchError = false;
+      const self = this;
+
+      this.feathers.app
+        .service(self.service)
+        .get(self.id)
+        .then(res => {
+          self.$set(this, "item", res);
+          self.fetchingItem = false;
+          self.fetchError = false;
+        })
+        .catch(err => {
+          console.error(`Error fetching item from "${this.service}"`, err);
+          self.fetchingItem = false;
+          self.fetchError = true;
+        });
+    },
     patchItem() {
       console.log("patching");
       console.log(`Creating new item on ${this.service}`);
       this.error = false;
       this.saving = true;
       const self = this;
-
       this.feathers.app
         .service(this.service)
-        .patch(this.privateItem[this.idField], { ...this.privateItem })
+        .patch(this.item[this.idField], { ...this.item })
         .then(res => {
           self.saving = false;
           self.error = false;
+          this.$emit("saved", res);
           return res;
         })
         .catch(err => {
           self.saving = false;
           self.error = err;
+          this.$emit("error", err);
         });
     },
     createItem() {
@@ -100,39 +121,40 @@ export default {
 
       this.feathers.app
         .service(this.service)
-        .create({ ...this.privateItem })
+        .create({ ...this.item })
         .then(res => {
           self.saving = false;
           self.error = false;
           if (self.resetOnCreate) {
             self.reset();
           }
+          this.$emit("saved", res);
           return res;
         })
         .catch(err => {
           self.saving = false;
           self.error = err;
+          this.$emit("error", err);
         });
     },
     reset() {
       console.log("Resetting");
       if (!this.defaultItem) {
-        this.privateItem = {};
+        this.item = {};
       } else {
-        this.privateItem = { ...this.defaultItem };
+        this.item = { ...this.defaultItem };
       }
+      this.$emit("reset");
     }
   },
   watch: {
-    item: {
+    id: {
       immediate: true,
-      deep: true,
-      handler(item, oldItem) {
-        // debugger;
-        if (item) {
-          this.privateItem = { ...item };
-        } else {
+      handler(id, oldItem) {
+        if (!id || id === "new") {
           this.reset();
+        } else {
+          this.fetchItem();
         }
       }
     }
