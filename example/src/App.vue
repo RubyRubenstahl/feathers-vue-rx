@@ -7,14 +7,15 @@
 </template>
 
 <script>
-import FeathersAppTest from "./components/FeathersAppTest.vue";
+  import FeathersAppTest from "./components/FeathersAppTest.vue";
+  import "../../src";
 
-export default {
-  name: "app",
-  components: {
-    FeathersAppTest
-  }
-};
+  export default {
+    name: "app",
+    components: {
+      FeathersAppTest
+    }
+  };
 </script>
 
 <style>
