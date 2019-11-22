@@ -1,25 +1,25 @@
 <template>
   <section>
     <template v-if="!initialLoadComplete && !error && pending">
-      <slot name="loading" :context="context" :data="data" :service="service">
+      <slot name="loading" :data="data" :service="service">
         <component :is="feathers.defaultPendingComponent" />
       </slot>
     </template>
 
     <template v-if="initialLoadComplete && !empty">
-      <slot name="loaded" :context="context" :data="data" :service="service">
+      <slot name="loaded" :data="data" :service="service">
         {{ data }}
       </slot>
     </template>
 
     <template v-if="!!error">
-      <slot name="error" :context="context" :data="data" :service="service">
+      <slot name="error" :data="data" :service="service">
         <component :is="feathers.defaultErrorComponent" :error="error" />
       </slot>
     </template>
 
     <template v-if="empty">
-      <slot name="empty" :context="context" :data="data" :service="service"
+      <slot name="empty" :data="data" :service="service"
         ><component :is="feathers.defaultEmptyComponent"
       /></slot>
     </template>
@@ -27,141 +27,133 @@
   </section>
 </template>
 <script>
-import { isNumber } from "util";
-import isEqual from "lodash.isequal";
-import uniqBy from "lodash.uniqby";
+  import { isNumber } from "util";
+  import isEqual from "lodash.isequal";
+  import uniqBy from "lodash.uniqby";
 
-const isPaginated = res =>
-  isNumber(res.total) && isNumber(res.skip) && isNumber(res.limit);
+  const isPaginated = res =>
+    isNumber(res.total) && isNumber(res.skip) && isNumber(res.limit);
 
-export default {
-  name: "feathers-find",
-  inject: ["feathers"],
-  props: {
-    query: {
-      type: Object,
-      default: () => ({})
+  export default {
+    name: "feathers-find",
+    inject: ["feathers"],
+    props: {
+      query: {
+        type: Object,
+        default: () => ({})
+      },
+      params: {
+        type: Object,
+        default: () => ({})
+      },
+      hooks: {
+        type: Object,
+        default: () => ({})
+      },
+      service: {
+        type: String,
+        required: "true"
+      },
+      idField: {
+        type: String,
+        default: "_id"
+      }
     },
-    params: {
-      type: Object,
-      default: () => ({})
+    mounted() {},
+    componentWillUnmount() {
+      this.querySubscription.unsubscribe();
     },
-    hooks: {
-      type: Object,
-      default: () => ({})
-    },
-    service: {
-      type: String,
-      required: "true"
-    },
-    idField: {
-      type: String,
-      default: "_id"
-    }
-  },
-  mounted() {
-    this.updateContext();
-  },
-  componentWillUnmount() {
-    this.querySubscription.unsubscribe();
-  },
-  methods: {
-    updateContext() {
-      this.context = {
-        app: this.app,
-        params: {
+    methods: {
+      runQuery() {
+        this.pending = true;
+        const service = this.app.service(this.service);
+        if (!service) {
+          this.error = new Error(`Service ${this.service} not found`);
+          this.pending = false;
+          this.data = null;
+          this.initialLoadComplete = false;
+          return;
+        }
+
+        const params = {
           ...this.params,
           query: { ...this.params.query, ...this.query }
-        }
+        };
+
+        this.querySubscription = service
+          .watch(this.ervice)
+          .find(params)
+          .subscribe(
+            res => {
+              setTimeout(() => {
+                this.history.push(["response", res, this]);
+                this.intitialLoadComplete = true;
+                this.paginated = isPaginated(res);
+                this.data = this.paginated ? res.data : res;
+
+                // Prevent duplicates that can appear in some situations
+                if (Array.isArray(this.data)) {
+                  this.data = uniqBy(this.data, this.idField);
+                }
+                this.pending = false;
+                this.initialLoadComplete = true;
+              }, 0);
+            },
+            err => {
+              this.history.push(["error", err, this]);
+              this.$set(this, "error", err);
+              this.pending = false;
+              console.error(`Error in ${this.service} find subscription`, err);
+            }
+          );
+      }
+    },
+    data() {
+      return {
+        initialLoadComplete: false,
+        pending: true,
+        error: null,
+        history: [],
+        querySubscription: null,
+        timeout: false,
+        data: null,
+        paginated: null
       };
     },
-    runQuery() {
-      this.updateContext();
-      this.pending = true;
-      const service = this.app.service(this.service);
 
-      if (!service) {
-        this.error = new Error(`Service ${this.service} not found`);
-        this.pending = false;
-        this.data = null;
-        this.initialLoadComplete = false;
-        return;
+    computed: {
+      empty() {
+        if (!this.initialLoadComplete) {
+          return null;
+        }
+        return !!this.data && this.data.length === 0;
+      },
+      app() {
+        return this.feathers.app;
       }
-      this.querySubscription = service
-        .watch(this.ervice)
-        .find(this.context.params)
-        .subscribe(
-          res => {
-            setTimeout(() => {
-              this.history.push(["response", res, this]);
-              this.intitialLoadComplete = true;
-              this.paginated = isPaginated(res);
-              this.data = this.paginated ? res.data : res;
-
-              // Prevent duplicates that can appear in some situations
-              if (Array.isArray(this.data)) {
-                this.data = uniqBy(this.data, this.idField);
-              }
-              this.pending = false;
-              this.initialLoadComplete = true;
-            }, 0);
-          },
-          err => {
-            this.history.push(["error", err, this]);
-            this.$set(this, "error", err);
-            this.pending = false;
-            console.error(`Error in ${this.service} find subscription`, err);
-          }
-        );
-    }
-  },
-  data() {
-    return {
-      context: { app: null, params: { query: {} } },
-      initialLoadComplete: false,
-      pending: true,
-      error: null,
-      history: [],
-      querySubscription: null,
-      timeout: false,
-      data: null,
-      paginated: null
-    };
-  },
-
-  computed: {
-    empty() {
-      if (!this.initialLoadComplete) {
-        return null;
+    },
+    watch: {
+      query: {
+        handler: "runQuery",
+        immediate: true
+      },
+      "feathers.authenticated"(isAuthenticated) {
+        if (
+          isAuthenticated &&
+          this.error &&
+          this.error.className === "not-authenticated"
+        ) {
+          this.error = null;
+          this.runQuery();
+        }
       }
-      return !!this.data && this.data.length === 0;
     },
-    app() {
-      return this.feathers.app;
-    }
-  },
-  watch: {
-    query: {
-      handler: "runQuery",
-      immediate: true
-    },
-    "feathers.authenticated"(isAuthenticated) {
-      if (
-        isAuthenticated &&
-        this.error &&
-        this.error.className === "not-authenticated"
-      ) {
-        this.error = null;
+    query(newQuery, prevQuery) {
+      if (!isEqual(newQuery, prevQuery)) {
+        this.updating = true;
+        this.querySubscription.unsubscribe();
         this.runQuery();
       }
     }
-  },
-  query(newQuery, prevQuery) {
-    if (!isEqual(newQuery, prevQuery)) {
-      this.updating = true;
-      this.querySubscription.unsubscribe();
-      this.runQuery();
-    }
-  }
-};
+  };
 </script>
