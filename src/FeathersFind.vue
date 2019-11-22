@@ -134,7 +134,15 @@
     },
     watch: {
       query: {
-        handler: "runQuery",
+        handler: function query(newQuery, prevQuery) {
+          if (!isEqual(newQuery, prevQuery)) {
+            this.updating = true;
+            if (this.querySubscription) {
+              this.querySubscription.unsubscribe();
+            }
+            this.runQuery();
+          }
+        },
         immediate: true
       },
       "feathers.authenticated"(isAuthenticated) {
@@ -146,13 +154,6 @@
           this.error = null;
           this.runQuery();
         }
-      }
-    },
-    query(newQuery, prevQuery) {
-      if (!isEqual(newQuery, prevQuery)) {
-        this.updating = true;
-        this.querySubscription.unsubscribe();
-        this.runQuery();
       }
     }
   };
