@@ -17,6 +17,7 @@
     "lodash.isequal": "^4.5.0",
     "lodash.uniqby": "^4.7.0",
     "socket.io-client": "^2.3.0",
+    "string-natural-compare": "^3.0.0",
     "vue-reactive-provide": "^0.3.0"
   }
 }
