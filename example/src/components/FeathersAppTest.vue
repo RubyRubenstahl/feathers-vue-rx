@@ -40,7 +40,7 @@
           </FeathersEdit>
         </div>
         <hr />
-        <FeathersFind service="dogs">
+        <FeathersFind service="dogs" :query="{}">
           <template slot="loading">Custom Loading Message...</template>
           <template slot="loaded" slot-scope="{ data: dogs }">
             <ul v-for="dog in dogs" :key="dog.name">
@@ -63,6 +63,29 @@
       <div>
         <h2>Users</h2>
         <FeathersFind service="users">
+          <template slot="loaded" slot-scope="{ data: users }">
+            <div v-if="selectedUser">
+              <FeathersGet service="users" :id="selectedUser">
+                <template slot="loaded" slot-scope="{ data: user }">
+                  Selected: <span>{{ user.username }} - {{ user.email }}</span>
+                </template>
+              </FeathersGet>
+            </div>
+
+            <ul v-for="user in users" :key="user._id">
+              <li>
+                <a href="#" @click.prevent="setSelectedUser(user._id)">{{
+                  user.username
+                }}</a>
+              </li>
+            </ul>
+          </template>
+        </FeathersFind>
+      </div>
+
+      <div>
+        <h2>Admin</h2>
+        <FeathersFind service="users" :query="{ role: 'admin' }">
           <template slot="loaded" slot-scope="{ data: users }">
             <ul v-for="user in users" :key="user._id">
               <li>{{ user.username }}</li>
@@ -120,44 +143,50 @@
 </template>
 
 <script>
-import "../../../src";
-import ConnectionStatus from "./ConnectionStatus";
-import feathersMemory from "feathers-memory";
+  import "../../../src";
+  import ConnectionStatus from "./ConnectionStatus";
+  import feathersMemory from "feathers-memory";
 
-const dogs = {
-  spot: {
-    id: "1",
-    name: "Spot",
-    breed: "Shih Tzu"
-  },
-  wendy: {
-    id: 2,
-    name: "Wendy",
-    breed: "lovemonster"
-  },
-  bear: {
-    id: 3,
-    name: "Bear",
-    breed: "bear"
-  }
-};
+  const dogs = {
+    spot: {
+      id: "1",
+      name: "Spot",
+      breed: "Shih Tzu"
+    },
+    wendy: {
+      id: "2",
+      name: "Wendy",
+      breed: "lovemonster"
+    },
+    bear: {
+      id: 3,
+      name: "Bear",
+      breed: "bear"
+    }
+  };
 
-export default {
-  name: "FeathersAppTest",
-  inject: ["feathers"],
-  components: { ConnectionStatus },
+  export default {
+    name: "FeathersAppTest",
+    inject: ["feathers"],
+    components: { ConnectionStatus },
 
-  created() {
-    this.feathers.app.use("/dogs", feathersMemory({ store: dogs, id: "id" }));
-    this.feathers.app.use("/empty-service", feathersMemory({}));
-  },
-  data: function() {
-    return {
-      editDog: null,
-      editUser: null
-    };
-  }
-};
+    created() {
+      this.feathers.app.use("/dogs", feathersMemory({ store: dogs }));
+      this.feathers.app.use("/empty-service", feathersMemory({}));
+    },
+    methods: {
+      setSelectedUser(id) {
+        this.selectedUser = id;
+      }
+    },
+    data: function() {
+      return {
+        editDog: null,
+        editUser: null,
+        selectedUser: null
+      };
+    }
+  };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

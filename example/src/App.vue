@@ -1,5 +1,5 @@
 <template>
-  <FeathersApp host="http://localhost:3030">
+  <FeathersApp url="http://localhost:3030">
     <div id="app">
       <FeathersAppTest msg="Welcome to Your Vue.js App" />
     </div>
@@ -7,14 +7,15 @@
 </template>
 
 <script>
-import FeathersAppTest from "./components/FeathersAppTest.vue";
+  import FeathersAppTest from "./components/FeathersAppTest.vue";
+  import "../../src";
 
-export default {
-  name: "app",
-  components: {
-    FeathersAppTest
-  }
-};
+  export default {
+    name: "app",
+    components: {
+      FeathersAppTest
+    }
+  };
 </script>
 
 <style>
