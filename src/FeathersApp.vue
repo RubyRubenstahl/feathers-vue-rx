@@ -4,6 +4,7 @@
   </div>
 </template>
 <script>
+  import Vue from "vue";
   import feathers from "@feathersjs/feathers";
   import socketio from "@feathersjs/socketio-client";
   import io from "socket.io-client";
@@ -14,7 +15,6 @@
   import FeathersPending from "./FeathersPending";
   import reactive from "feathers-reactive";
   console.log('Registering feathersApp')
-  import Vue from "vue";
   export default {
     name: "FeathersApp",
     props: {
@@ -38,8 +38,7 @@
         default: () => FeathersPending
       }
     },
-    mixins: [
-      ReactiveProvideMixin({
+    reactiveProvide: {
         name: "feathers",
         include: [
           "app",
@@ -55,8 +54,7 @@
           "defaultPendingComponent",
           "online"
         ]
-      })
-    ],
+    },
     created() {
       if (this.url) {
         const socket = io(this.url);
@@ -95,7 +93,7 @@
             console.log("Login successful");
             this.user = res.user;
             this.authenticating = false;
-            this.$set(this, "authenticated", true);
+            this.authenticated = true;
             localStorage.setItem("username", credentials.username);
             //  this.$emit('login', this.user);
             return res.user;
@@ -117,8 +115,8 @@
             console.log("Login successful");
             this.user = res.user;
             this.authenticating = false;
-            this.$set(this, "authenticated", true);
-            // this.$emit('login', this.user);
+            this.authenticated=true;
+            this.$emit('login', this.user);
             return res.user;
           })
           .catch(err => {
@@ -131,19 +129,22 @@
         this.app.logout();
         this.authenticated = false;
         this.authenticating = false;
-        // this.$emit('logout');
+        this.$emit('logout');
       },
       registerSocketEventHandlers(socket) {
         socket.on("connect", () => {
           console.log('connected')
-          this.$set(this, 'connected', true);
+          this.connected = true;
           this.reAuthenticate();
         });
         socket.on("disconnect", () => {
           this.connected = false;
+          console.warn('Disconnected')
         });
-        socket.on("error", () => {
-          this.connected = false;
+        socket.on("error", err => {
+            this.connected = false;
+            console.error('Socket error', err)
+
         });
       }
     }
