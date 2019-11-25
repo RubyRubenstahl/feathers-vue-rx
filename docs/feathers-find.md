@@ -1,5 +1,5 @@
 ---
-title: \<FeathersFind>
+title: FeathersFind
 ---
 # \<FeathersFind>
 
