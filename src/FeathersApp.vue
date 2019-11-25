@@ -135,7 +135,8 @@
       },
       registerSocketEventHandlers(socket) {
         socket.on("connect", () => {
-          this.connected = true;
+          console.log('connected')
+          this.$set(this, 'connected', true);
           this.reAuthenticate();
         });
         socket.on("disconnect", () => {

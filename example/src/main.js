@@ -1,9 +1,11 @@
 import Vue from "vue";
 import App from "./App.vue";
+import ReactiveProvide from "vue-reactive-provide";
 
 Vue.config.productionTip = false;
-import initFeathers from "../../src";
-initFeathers(Vue)
+Vue.use(ReactiveProvide);
+import FeathersVueRx from "../../src";
+Vue.use(FeathersVueRx)
 new Vue({
   render: h => h(App)
 }).$mount("#app");
