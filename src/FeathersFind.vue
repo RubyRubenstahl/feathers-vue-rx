@@ -111,7 +111,7 @@ export default {
                   })
                 );
               }
-
+              this.$emit("loaded", res);
               this.pending = false;
               this.initialLoadComplete = true;
             }, 0);
@@ -120,6 +120,7 @@ export default {
             this.history.push(["error", err, this]);
             this.$set(this, "error", err);
             this.pending = false;
+            this.$emit('error', err)
             console.error(`Error in ${this.service} find subscription`, err);
           }
         );
