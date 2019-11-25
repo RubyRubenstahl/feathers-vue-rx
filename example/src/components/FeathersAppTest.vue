@@ -3,7 +3,7 @@
     <h1>FeathersApp Test</h1>
     <ConnectionStatus />
     <FeathersLogin />
-
+<!-- 
     <div class="service-status">
       <div>
         <h2>dogs</h2>
@@ -138,7 +138,7 @@
           </FeathersFind>
         </FeathersAuthenticated>
       </div>
-    </div>
+    </div> -->
   </section>
 </template>
 
