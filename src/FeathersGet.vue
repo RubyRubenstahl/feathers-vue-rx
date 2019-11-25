@@ -25,34 +25,41 @@
 import { isNumber } from "util";
 import isEqual from "lodash.isequal";
 
-export default {
-  name: "feathers-get",
-  inject: ["feathers"],
-  props: {
-    id: {
-      type: String,
-      required: true
-    },
-    query: {
-      type: Object,
-      default: () => ({})
-    },
-    params: {
-      type: Object,
-      default: () => ({})
-    },
-    hooks: {
-      type: Object,
-      default: () => ({})
-    },
-    service: {
-      type: String,
-      required: "true"
-    },
-    idField: {
-      type: String,
-      default: "_id"
-    },
+  export default {
+    name: "feathers-get",
+    inject: ["feathers"],
+    props: {
+      id: {
+        // ID of the item to get
+        type: String,
+        required: true
+      },
+      query: {
+        // Feathers style query
+        type: Object,
+        default: () => ({})
+      },
+      params: {
+        // Params to pass. The query will be merged in
+        type: Object,
+        default: () => ({})
+      },
+      hooks: {
+        // Standard feathers hook object to be run
+        type: Object,
+        default: () => ({})
+      },
+      service: {
+        // Name of the service to get from 
+        type: String,
+        required: "true"
+      },
+      idField: {
+        // ID Field for the service
+        type: String,
+        default: "_id"
+      },
+   
     invisible: {
       // Hides default slots
       type: Boolean,
