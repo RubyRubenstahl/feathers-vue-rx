@@ -1,8 +1,14 @@
 module.exports = {
-  title: "Hello VuePress",
-  description: "Just playing around",
+  title: "Feathers Vue Rx",
+  description: "Declarative, Reactive Vue components for Feathers",
   themeConfig: {
-    sidebar: [["/", "home"], "/feathers-find", "/feathers-app"],
-    heroText: "Welcome!"
+    sidebar: [
+      '/',
+      'feathers-app',
+      'feathers-find',
+      'feathers-get',
+      'feathers-authenticated',
+      'feathers-unauthenticated'
+    ],
   }
 };

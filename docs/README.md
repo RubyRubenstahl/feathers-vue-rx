@@ -1,9 +1,9 @@
 ---
+home: true
+heroImage: feathers-vue-rx-logo.png
+heroText: Feathers Vue Rx
+tagline: Simple. Powerful. Fun.
+actionText: Get Started →
+actionLink: /feathers-app
+---
 
-## heroText: Test
-
-# Welcome to to Example.com
-
-We hope you love this tiny tiny site.
-
-Need to [contact someone](./feathers-find.md) on the team?
