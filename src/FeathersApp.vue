@@ -97,6 +97,7 @@
             this.authenticating = false;
             this.$set(this, "authenticated", true);
             localStorage.setItem("username", credentials.username);
+             this.$emit('login', this.user);
             return res.user;
           })
           .catch(err => {
@@ -117,6 +118,7 @@
             this.user = res.user;
             this.authenticating = false;
             this.$set(this, "authenticated", true);
+            this.$emit('login', this.user);
             return res.user;
           })
           .catch(err => {
@@ -129,6 +131,7 @@
         this.app.logout();
         this.authenticated = false;
         this.authenticating = false;
+        this.$emit('logout');
       },
       registerSocketEventHandlers(socket) {
         socket.on("connect", () => {
