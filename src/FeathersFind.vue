@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section v-if="!invisible">
     <template v-if="!initialLoadComplete && !error && pending">
       <slot name="loading" :data="data" :service="service">
         <component :is="feathers.defaultPendingComponent" />
@@ -27,134 +27,152 @@
   </section>
 </template>
 <script>
-  import { isNumber } from "util";
-  import isEqual from "lodash.isequal";
-  import uniqBy from "lodash.uniqby";
+import { isNumber } from "util";
+import isEqual from "lodash.isequal";
+import uniqBy from "lodash.uniqby";
+import naturalCompare from "string-natural-compare";
 
-  const isPaginated = res =>
-    isNumber(res.total) && isNumber(res.skip) && isNumber(res.limit);
+const isPaginated = res =>
+  isNumber(res.total) && isNumber(res.skip) && isNumber(res.limit);
 
-  export default {
-    name: "feathers-find",
-    inject: ["feathers"],
-    props: {
-      query: {
-        type: Object,
-        default: () => ({})
-      },
-      params: {
-        type: Object,
-        default: () => ({})
-      },
-      hooks: {
-        type: Object,
-        default: () => ({})
-      },
-      service: {
-        type: String,
-        required: "true"
-      },
-      idField: {
-        type: String,
-        default: "_id"
+export default {
+  name: "feathers-find",
+  inject: ["feathers"],
+  props: {
+    query: {
+      type: Object,
+      default: () => ({})
+    },
+    params: {
+      type: Object,
+      default: () => ({})
+    },
+    hooks: {
+      type: Object,
+      default: () => ({})
+    },
+    service: {
+      type: String,
+      required: "true"
+    },
+    idField: {
+      type: String,
+      default: "_id"
+    },
+    sortBy: {
+      type: String,
+      default: null
+    },
+    invisible:{
+      type: Boolean,
+      default: false
+    }
+  },
+  mounted() {},
+  componentWillUnmount() {
+    this.querySubscription.unsubscribe();
+  },
+  methods: {
+    runQuery() {
+      this.pending = true;
+      const service = this.app.service(this.service);
+      if (!service) {
+        this.error = new Error(`Service ${this.service} not found`);
+        this.pending = false;
+        this.data = null;
+        this.initialLoadComplete = false;
+        return;
       }
-    },
-    mounted() {},
-    componentWillUnmount() {
-      this.querySubscription.unsubscribe();
-    },
-    methods: {
-      runQuery() {
-        this.pending = true;
-        const service = this.app.service(this.service);
-        if (!service) {
-          this.error = new Error(`Service ${this.service} not found`);
-          this.pending = false;
-          this.data = null;
-          this.initialLoadComplete = false;
-          return;
-        }
 
-        const params = {
-          ...this.params,
-          query: { ...this.params.query, ...this.query }
-        };
-
-        this.querySubscription = service
-          .watch(this.ervice)
-          .find(params)
-          .subscribe(
-            res => {
-              setTimeout(() => {
-                this.history.push(["response", res, this]);
-                this.intitialLoadComplete = true;
-                this.paginated = isPaginated(res);
-                this.data = this.paginated ? res.data : res;
-
-                // Prevent duplicates that can appear in some situations
-                if (Array.isArray(this.data)) {
-                  this.data = uniqBy(this.data, this.idField);
-                }
-                this.pending = false;
-                this.initialLoadComplete = true;
-              }, 0);
-            },
-            err => {
-              this.history.push(["error", err, this]);
-              this.$set(this, "error", err);
-              this.pending = false;
-              console.error(`Error in ${this.service} find subscription`, err);
-            }
-          );
-      }
-    },
-    data() {
-      return {
-        initialLoadComplete: false,
-        pending: true,
-        error: null,
-        history: [],
-        querySubscription: null,
-        timeout: false,
-        data: null,
-        paginated: null
+      const params = {
+        ...this.params,
+        query: { ...this.params.query, ...this.query }
       };
-    },
 
-    computed: {
-      empty() {
-        if (!this.initialLoadComplete) {
-          return null;
-        }
-        return !!this.data && this.data.length === 0;
-      },
-      app() {
-        return this.feathers.app;
-      }
-    },
-    watch: {
-      query: {
-        handler: function query(newQuery, prevQuery) {
-          if (!isEqual(newQuery, prevQuery)) {
-            this.updating = true;
-            if (this.querySubscription) {
-              this.querySubscription.unsubscribe();
-            }
-            this.runQuery();
+      this.querySubscription = service
+        .watch(this.ervice)
+        .find(params)
+        .subscribe(
+          res => {
+            setTimeout(() => {
+              this.history.push(["response", res, this]);
+              this.intitialLoadComplete = true;
+              this.paginated = isPaginated(res);
+              this.data = this.paginated ? res.data : res;
+
+              // Prevent duplicates that can appear in some situations
+              if (Array.isArray(this.data)) {
+                this.data = uniqBy(this.data, this.idField);
+              }
+              if (this.sortBy && Array.isArray(this.data)) {
+                this.data.sort((a, b) =>
+                  naturalCompare(a[this.sortBy], b[this.sortBy], {
+                    caseInsensitive: true
+                  })
+                );
+              }
+              this.$emit("loaded", res);
+              this.pending = false;
+              this.initialLoadComplete = true;
+            }, 0);
+          },
+          err => {
+            this.history.push(["error", err, this]);
+            this.$set(this, "error", err);
+            this.pending = false;
+            this.$emit('error', err)
+            console.error(`Error in ${this.service} find subscription`, err);
           }
-        },
-        immediate: true
-      },
-      "feathers.authenticated"(isAuthenticated) {
-        if (
-          isAuthenticated &&
-          this.error &&
-          this.error.className === "not-authenticated"
-        ) {
-          this.error = null;
+        );
+    }
+  },
+  data() {
+    return {
+      initialLoadComplete: false,
+      pending: true,
+      error: null,
+      history: [],
+      querySubscription: null,
+      timeout: false,
+      data: null,
+      paginated: null
+    };
+  },
+
+  computed: {
+    empty() {
+      if (!this.initialLoadComplete) {
+        return null;
+      }
+      return !!this.data && this.data.length === 0;
+    },
+    app() {
+      return this.feathers.app;
+    }
+  },
+  watch: {
+    query: {
+      handler: function query(newQuery, prevQuery) {
+        if (!isEqual(newQuery, prevQuery)) {
+          this.updating = true;
+          if (this.querySubscription) {
+            this.querySubscription.unsubscribe();
+          }
           this.runQuery();
         }
+      },
+      immediate: true
+    },
+    "feathers.authenticated"(isAuthenticated) {
+      if (
+        isAuthenticated &&
+        this.error &&
+        this.error.className === "not-authenticated"
+      ) {
+        this.error = null;
+        this.runQuery();
       }
     }
-  };
+  }
+};
 </script>
