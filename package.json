@@ -10,6 +10,9 @@
   },
   "author": "",
   "license": "ISC",
+  "peerDependencies": {
+    "vue": "^2.6.10"
+  },
   "dependencies": {
     "@feathersjs/authentication-client": "^4.3.11",
     "@feathersjs/feathers": "^4.3.11",

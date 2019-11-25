@@ -36,7 +36,7 @@ const isPaginated = res =>
   isNumber(res.total) && isNumber(res.skip) && isNumber(res.limit);
 
 export default {
-  name: "feathers-find",
+  name: "FeathersFind",
   inject: ["feathers"],
   props: {
     query: {

@@ -26,7 +26,7 @@ import { isNumber } from "util";
 import isEqual from "lodash.isequal";
 
   export default {
-    name: "feathers-get",
+    name: "FeathersGet",
     inject: ["feathers"],
     props: {
       id: {

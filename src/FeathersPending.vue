@@ -7,7 +7,7 @@
 </template>
 <script>
 export default {
-  name: "feathers-pending"
+  name: "FeathersPending"
 };
 </script>
 <style>

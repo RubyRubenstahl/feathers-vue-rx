@@ -31,7 +31,7 @@
 </template>
 <script>
 export default {
-  name: "feathers-login",
+  name: "FeathersLogin",
   inject: ["feathers"],
   props: {
     strategy: {

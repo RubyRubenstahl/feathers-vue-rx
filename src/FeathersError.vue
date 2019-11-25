@@ -3,7 +3,7 @@
 </template>
 <script>
   export default {
-    name: "feathers-error",
+    name: "FeathersError",
     props: {
       error: {
         type: [Object, Error],

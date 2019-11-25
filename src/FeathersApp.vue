@@ -13,7 +13,7 @@
   import FeathersError from "./FeathersError";
   import FeathersPending from "./FeathersPending";
   import reactive from "feathers-reactive";
-
+  console.log('Registering feathersApp')
   import Vue from "vue";
   export default {
     name: "FeathersApp",
@@ -97,7 +97,7 @@
             this.authenticating = false;
             this.$set(this, "authenticated", true);
             localStorage.setItem("username", credentials.username);
-             this.$emit('login', this.user);
+            //  this.$emit('login', this.user);
             return res.user;
           })
           .catch(err => {
@@ -118,7 +118,7 @@
             this.user = res.user;
             this.authenticating = false;
             this.$set(this, "authenticated", true);
-            this.$emit('login', this.user);
+            // this.$emit('login', this.user);
             return res.user;
           })
           .catch(err => {
@@ -131,7 +131,7 @@
         this.app.logout();
         this.authenticated = false;
         this.authenticating = false;
-        this.$emit('logout');
+        // this.$emit('logout');
       },
       registerSocketEventHandlers(socket) {
         socket.on("connect", () => {

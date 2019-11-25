@@ -26,7 +26,7 @@
 import FeathersError from "./FeathersError";
 
 export default {
-  name: "feathers-edit",
+  name: "FeathersEdit",
   components: { FeathersError },
   inject: ["feathers"],
   data() {
