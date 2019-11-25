@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section v-if="!invisible">
     <template v-if="!error && pending">
       <slot name="loading" :context="context" :data="data" :service="service">
         <component :is="feathers.defaultPendingComponent" />
@@ -25,70 +25,17 @@
   import { isNumber } from "util";
   import isEqual from "lodash.isequal";
 
-  export default {
-    name: "feathers-get",
-    inject: ["feathers"],
-    props: {
-      id: {
-        type: String,
-        required: true
-      },
-      query: {
-        type: Object,
-        default: () => ({})
-      },
-      params: {
-        type: Object,
-        default: () => ({})
-      },
-      hooks: {
-        type: Object,
-        default: () => ({})
-      },
-      service: {
-        type: String,
-        required: "true"
-      },
-      idField: {
-        type: String,
-        default: "_id"
-      }
+    idField: {
+      type: String,
+      default: "_id"
     },
-    mounted() {
-      this.updateContext();
-    },
-    componentWillUnmount() {
-      this.querySubscription.unsubscribe();
-    },
-    methods: {
-      updateContext() {
-        this.context = {
-          app: this.app,
-          params: {
-            ...this.params,
-            query: { ...this.params.query, ...this.query }
-          }
-        };
-      },
-      runQuery() {
-        this.updateContext();
-        this.pending = true;
-        const service = this.app.service(this.service);
-        if (!service) {
-          this.error = new Error(`Service ${this.service} not found`);
-          this.pending = false;
-          this.data = null;
-          return;
-        }
-        this.querySubscription = service
-          .watch(this.service)
-          .get(this.id)
-          .subscribe(
-            res => {
-              setTimeout(() => {
-                this.history.push(["response", res, this]);
-                this.data = res;
-                this.pending = false;
+    invisible: {
+      // Hides default slots
+      type: Boolean,
+      default: false
+    }
+  },
+  mounted() {
               }, 0);
             },
             err => {

@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section v-if="!invisible">
     <template v-if="!initialLoadComplete && !error && pending">
       <slot name="loading" :data="data" :service="service">
         <component :is="feathers.defaultPendingComponent" />
@@ -62,6 +62,10 @@ export default {
     sortBy: {
       type: String,
       default: null
+    },
+    invisible:{
+      type: Boolean,
+      default: false
     }
   },
   mounted() {},
