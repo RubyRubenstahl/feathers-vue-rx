@@ -1,5 +1,5 @@
 <template>
-  <section v-if="!invisible">
+  <div v-if="!invisible" style="display:contents">
     <template v-if="!initialLoadComplete && !error && pending">
       <slot name="loading" :data="data" :service="service">
         <component :is="feathers.defaultPendingComponent" />
@@ -24,7 +24,7 @@
       /></slot>
     </template>
     <slot></slot>
-  </section>
+  </div>
 </template>
 <script>
 import { isNumber } from "util";
