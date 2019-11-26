@@ -38,22 +38,33 @@
         default: () => FeathersPending
       }
     },
-    reactiveProvide: {
-        name: "feathers",
-        include: [
-          "app",
-          "authenticating",
-          "authenticated",
-          "authenticationError",
-          "user",
-          "connected",
-          "login",
-          "logout",
-          "defaultEmptyComponent",
-          "defaultErrorComponent",
-          "defaultPendingComponent",
-          "online"
-        ]
+    provide(){
+      return {feathers: this.$data}
+    },
+    // reactiveProvide: {
+    //     name: "feathers",
+    //     include: [
+    //       "app",
+    //       "authenticating",
+    //       "authenticated",
+    //       "authenticationError",
+    //       "user",
+    //       "connected",
+    //       "login",
+    //       "logout",
+    //       "defaultEmptyComponent",
+    //       "defaultErrorComponent",
+    //       "defaultPendingComponent",
+    //       "online"
+    //     ]
+    // },
+    computed:{
+      feathers(){
+        return {
+          app: this.app,
+          connected: this.connected
+        }
+      }
     },
     created() {
       if (this.url) {
@@ -61,6 +72,10 @@
         this.app.configure(socketio(socket));
         this.registerSocketEventHandlers(socket);
       }
+
+      setInterval(() => {
+        this.connected = !this.connected
+      }, 1000);
 
       this.app.configure(reactive({ idField: this.defaultIdField }));
       this.app.configure(auth({}));
