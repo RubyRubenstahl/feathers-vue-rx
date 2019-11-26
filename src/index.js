@@ -5,12 +5,10 @@ import FeathersAuthenticated from "./FeathersAuthenticated";
 import FeathersUnauthenticated from "./FeathersUnauthenticated";
 import FeathersEdit from "./FeathersEdit";
 import FeathersGet from "./FeathersGet";
-import ReactiveProvide from "vue-reactive-provide";
  
 const FeathersVueEx = {
     install(Vue, options) {
         console.log('Registering feathers-vue-rx components');
-        Vue.use(ReactiveProvide);
         Vue.component("FeathersApp", FeathersApp);
         Vue.component("FeathersFind", FeathersFind);
         Vue.component("FeathersLogin", FeathersLogin);
