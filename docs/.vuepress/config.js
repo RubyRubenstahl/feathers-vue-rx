@@ -4,6 +4,7 @@ module.exports = {
   themeConfig: {
     sidebar: [
       '/',
+      'getting-started',
       'feathers-app',
       'feathers-find',
       'feathers-get',
