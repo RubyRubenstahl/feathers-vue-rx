@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>FeathersFind | Feathers Vue Rx</title>
+    <meta name="description" content="Declarative, Reactive Vue components for Feathers">
+    
+    
+    <link rel="preload" href="/feathers-vue-rx/assets/css/0.styles.1f4dc72a.css" as="style"><link rel="preload" href="/feathers-vue-rx/assets/js/app.f861bd45.js" as="script"><link rel="preload" href="/feathers-vue-rx/assets/js/2.bd4fb8a0.js" as="script"><link rel="preload" href="/feathers-vue-rx/assets/js/8.2d4a2a5f.js" as="script"><link rel="prefetch" href="/feathers-vue-rx/assets/js/10.4f890189.js"><link rel="prefetch" href="/feathers-vue-rx/assets/js/11.a0de71e6.js"><link rel="prefetch" href="/feathers-vue-rx/assets/js/12.d18549ba.js"><link rel="prefetch" href="/feathers-vue-rx/assets/js/3.039fe9bd.js"><link rel="prefetch" href="/feathers-vue-rx/assets/js/4.59116900.js"><link rel="prefetch" href="/feathers-vue-rx/assets/js/5.d9d48266.js"><link rel="prefetch" href="/feathers-vue-rx/assets/js/6.b3e6164c.js"><link rel="prefetch" href="/feathers-vue-rx/assets/js/7.9db7c6a3.js"><link rel="prefetch" href="/feathers-vue-rx/assets/js/9.3c093a6a.js">
+    <link rel="stylesheet" href="/feathers-vue-rx/assets/css/0.styles.1f4dc72a.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/feathers-vue-rx/" class="home-link router-link-active"><!----> <span class="site-name">Feathers Vue Rx</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <!----></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><!---->  <ul class="sidebar-links"><li><a href="/feathers-vue-rx/" class="sidebar-link">Home</a></li><li><a href="/feathers-vue-rx/getting-started.html" class="sidebar-link">Getting Started</a></li><li><a href="/feathers-vue-rx/feathers-app.html" class="sidebar-link">FeathersApp</a></li><li><a href="/feathers-vue-rx/feathers-find.html" class="active sidebar-link">FeathersFind</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/feathers-vue-rx/feathers-find.html#props" class="sidebar-link">Props</a></li><li class="sidebar-sub-header"><a href="/feathers-vue-rx/feathers-find.html#slots" class="sidebar-link">Slots</a></li><li class="sidebar-sub-header"><a href="/feathers-vue-rx/feathers-find.html#events" class="sidebar-link">Events</a></li></ul></li><li><a href="/feathers-vue-rx/feathers-get.html" class="sidebar-link">FeathersGet</a></li><li><a href="/feathers-vue-rx/feathers-authenticated.html" class="sidebar-link">FeathersAuthenticated</a></li><li><a href="/feathers-vue-rx/feathers-unauthenticated.html" class="sidebar-link">FeathersUnauthenticated</a></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="feathersfind"><a href="#feathersfind" class="header-anchor">#</a> &lt;FeathersFind&gt;</h1> <h2 id="props"><a href="#props" class="header-anchor">#</a> Props</h2> <div class="language-JS extra-class"><pre class="language-js"><code>  props<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    query<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      <span class="token comment">// Feathers style query</span>
+      type<span class="token punctuation">:</span> Object<span class="token punctuation">,</span>
+      <span class="token function-variable function">default</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    params<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      <span class="token comment">// Params to pass. The query will be merged in</span>
+      type<span class="token punctuation">:</span> Object<span class="token punctuation">,</span>
+      <span class="token function-variable function">default</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    hooks<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      <span class="token comment">// Standard feathers hook object to be run</span>
+      type<span class="token punctuation">:</span> Object<span class="token punctuation">,</span>
+      <span class="token function-variable function">default</span><span class="token punctuation">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    service<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      <span class="token comment">// Name of the service to find from </span>
+      type<span class="token punctuation">:</span> String<span class="token punctuation">,</span>
+      required<span class="token punctuation">:</span> <span class="token string">&quot;true&quot;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    idField<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      <span class="token comment">// Id field for the service</span>
+      type<span class="token punctuation">:</span> String<span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span> <span class="token string">&quot;_id&quot;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    sortBy<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      <span class="token comment">// Field name to sort on after find is complete</span>
+      type<span class="token punctuation">:</span> String<span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span> <span class="token keyword">null</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    invisible<span class="token punctuation">:</span><span class="token punctuation">{</span>
+      <span class="token comment">// Hides default slots</span>
+      type<span class="token punctuation">:</span> Boolean<span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span> <span class="token boolean">false</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+</code></pre></div><h2 id="slots"><a href="#slots" class="header-anchor">#</a> Slots</h2> <h3 id="loading"><a href="#loading" class="header-anchor">#</a> loading</h3> <h3 id="loaded"><a href="#loaded" class="header-anchor">#</a> loaded</h3> <h3 id="error"><a href="#error" class="header-anchor">#</a> error</h3> <h3 id="empty"><a href="#empty" class="header-anchor">#</a> empty</h3> <h2 id="events"><a href="#events" class="header-anchor">#</a> Events</h2> <h3 id="loaded-2"><a href="#loaded-2" class="header-anchor">#</a> loaded</h3> <p>Emitted when a <code>get</code> operation is successfully completed. The result is passed to along with the event.</p> <h3 id="error-2"><a href="#error-2" class="header-anchor">#</a> error</h3> <p>Emitted when a <code>get</code> operation fails. The error object is passed with the event.</p></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/feathers-vue-rx/feathers-app.html" class="prev">FeathersApp</a></span> <span class="next"><a href="/feathers-vue-rx/feathers-get.html">FeathersGet</a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/feathers-vue-rx/assets/js/app.f861bd45.js" defer></script><script src="/feathers-vue-rx/assets/js/2.bd4fb8a0.js" defer></script><script src="/feathers-vue-rx/assets/js/8.2d4a2a5f.js" defer></script>
+  </body>
+</html>
