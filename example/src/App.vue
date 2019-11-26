@@ -8,7 +8,7 @@
 
 <script>
   import FeathersAppTest from "./components/FeathersAppTest.vue";
-  import "../../src";
+  
 
   export default {
     name: "app",

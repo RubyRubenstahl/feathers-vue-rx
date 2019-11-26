@@ -7,6 +7,10 @@
 </template>
 <script>
 export default {
-  inject: ["feathers"]
+  name:'ConnectionStatus',
+   inject: ["feathers"],
+  data(){return {
+
+  }},
 };
 </script>
