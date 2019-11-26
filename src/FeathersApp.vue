@@ -9,7 +9,6 @@
   import socketio from "@feathersjs/socketio-client";
   import io from "socket.io-client";
   import auth from "@feathersjs/authentication-client";
-  import { ReactiveProvideMixin } from "vue-reactive-provide";
   import FeathersEmpty from "./FeathersEmpty";
   import FeathersError from "./FeathersError";
   import FeathersPending from "./FeathersPending";
@@ -38,126 +37,104 @@
         default: () => FeathersPending
       }
     },
-    provide(){
-      return {feathers: this.$data}
-    },
-    // reactiveProvide: {
-    //     name: "feathers",
-    //     include: [
-    //       "app",
-    //       "authenticating",
-    //       "authenticated",
-    //       "authenticationError",
-    //       "user",
-    //       "connected",
-    //       "login",
-    //       "logout",
-    //       "defaultEmptyComponent",
-    //       "defaultErrorComponent",
-    //       "defaultPendingComponent",
-    //       "online"
-    //     ]
-    // },
-    computed:{
-      feathers(){
-        return {
-          app: this.app,
-          connected: this.connected
-        }
-      }
-    },
+   provide(){
+     return {feathers: this.feathers}
+   },
     created() {
       if (this.url) {
         const socket = io(this.url);
-        this.app.configure(socketio(socket));
+        this.feathers.app.configure(socketio(socket));
         this.registerSocketEventHandlers(socket);
       }
 
-      setInterval(() => {
-        this.connected = !this.connected
-      }, 1000);
+      this.feathers.app.configure(reactive({ idField: this.defaultIdField }));
+      this.feathers.app.configure(auth({}));
 
-      this.app.configure(reactive({ idField: this.defaultIdField }));
-      this.app.configure(auth({}));
-
-      window.addEventListener("offline", () => (this.online = false));
-      window.addEventListener("online", () => (this.online = true));
+      window.addEventListener("offline", () => (this.feathers.online = false));
+      window.addEventListener("online", () => (this.feathers.online = true));
     },
     mounted() {
       Vue.prototype.$feathers = this.feathers;
     },
     data() {
       return {
-        app: feathers(),
-        authenticating: false,
-        authenticated: false,
-        user: null,
-        connected: false,
-        online: navigator ? navigator.onLine : true,
-        authenticationError: null
+        feathers:{
+          app: feathers(),
+          authenticating: false,
+          authenticated: false,
+          user: null,
+          connected: false,
+          online: navigator ? navigator.onLine : true,
+          authenticationError: null,
+          login: this.login,
+          logout: this.logout,
+          defaultEmptyComponent: this.defaultEmptyComponent,
+          defaultErrorComponent: this.defaultErrorComponent,
+          defaultPendingComponent: this.defaultPendingComponent,
+        }
       };
     },
     methods: {
       async login(credentials, strategy = "local") {
         console.log("Logging in");
-        this.authenticating = true;
-        this.authenticated = false;
-        return this.app
+        this.feathers.authenticating = true;
+        this.feathers.authenticated = false;
+        return this.feathers.app
           .authenticate({ strategy, ...credentials })
           .then(res => {
             console.log("Login successful");
-            this.user = res.user;
-            this.authenticating = false;
-            this.authenticated = true;
+            this.feathers.user = res.user;
+            this.feathers.authenticating = false;
+            this.feathers.authenticated = true;
             localStorage.setItem("username", credentials.username);
             //  this.$emit('login', this.user);
             return res.user;
           })
           .catch(err => {
             console.error(`Login failed: ${err.message}`);
-            this.authenticating = false;
-            this.authenticated = false;
-            this.authenticationError = err;
+            this.feathers.authenticating = false;
+            this.feathers.authenticated = false;
+            this.feathers.authenticationError = err;
           });
       },
       reAuthenticate() {
         console.log("Attempting to re-authenticate");
-        this.authenticating = true;
-        this.authenticated = false;
-        return this.app
+        this.feathers.authenticating = true;
+        this.feathers.authenticated = false;
+        return this.feathers.app
           .reAuthenticate()
           .then(res => {
             console.log("Login successful");
-            this.user = res.user;
-            this.authenticating = false;
-            this.authenticated=true;
+            this.feathers.user = res.user;
+            this.feathers.authenticating = false;
+            this.feathers.authenticated=true;
             this.$emit('login', this.user);
             return res.user;
           })
           .catch(err => {
-            this.authenticating = false;
-            this.authenticated = false;
+            this.feathers.authenticating = false;
+            this.feathers.authenticated = false;
             throw err;
           });
       },
       async logout() {
-        this.app.logout();
-        this.authenticated = false;
-        this.authenticating = false;
+        this.feathers.app.logout();
+        this.feathers.authenticated = false;
+        this.feathers.authenticating = false;
         this.$emit('logout');
       },
       registerSocketEventHandlers(socket) {
         socket.on("connect", () => {
           console.log('connected')
-          this.connected = true;
+          this.feathers.connected = true;
           this.reAuthenticate();
         });
         socket.on("disconnect", () => {
-          this.connected = false;
+          this.feathers.connected = false;
           console.warn('Disconnected')
         });
         socket.on("error", err => {
-            this.connected = false;
+            this.feathers.connected = false;
             console.error('Socket error', err)
 
         });
