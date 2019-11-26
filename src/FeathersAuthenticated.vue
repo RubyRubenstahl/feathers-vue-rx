@@ -1,6 +1,5 @@
 <template>
   <div v-if="feathers.authenticated">
-    {{feathers.authenticated}}
     <slot></slot>
   </div>
 </template>
