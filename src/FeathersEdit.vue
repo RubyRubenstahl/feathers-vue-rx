@@ -95,6 +95,7 @@ export default {
     patchItem() {
       console.log("patching");
       console.log(`Creating new item on ${this.service}`);
+      delete this.item._id
       this.error = false;
       this.saving = true;
       const self = this;
