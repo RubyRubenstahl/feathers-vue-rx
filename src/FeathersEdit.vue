@@ -53,7 +53,7 @@ export default {
     },
     defaultItem: {
       type: Object,
-      dafault: () => {}
+      default: () => {}
     },
     resetOnCreate: {
       type: Boolean,
