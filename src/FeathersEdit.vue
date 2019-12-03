@@ -95,13 +95,14 @@ export default {
     patchItem() {
       console.log("patching");
       console.log(`Creating new item on ${this.service}`);
-      delete this.item._id
+      const id = this.item[this.idField];
+      delete this.item[this.idField]
       this.error = false;
       this.saving = true;
       const self = this;
       this.feathers.app
         .service(this.service)
-        .patch(this.item[this.idField], { ...this.item })
+        .patch(id, { ...this.item })
         .then(res => {
           self.saving = false;
           self.error = false;
