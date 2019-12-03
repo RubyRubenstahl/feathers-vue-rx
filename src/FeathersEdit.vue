@@ -10,16 +10,12 @@
         :saving="saving"
         :fetchingItem="fetchingItem"
         :fetchError="fetchError"
+        :saveError="saveError"
       >
         Edit
       </slot>
     </template>
 
-    <template v-if="!!error">
-      <slot name="error" :error="error">
-        <FeathersError :error="error" />
-      </slot>
-    </template>
   </div>
 </template>
 <script>
@@ -33,10 +29,11 @@ export default {
     return {
       item: null,
       saving: false,
-      error: null,
+      saveError: null,
       loading: false,
       fetchingItem: false,
-      fetchError: null
+      fetchError: null,
+      forceNew: false
     };
   },
   props: {
@@ -58,11 +55,16 @@ export default {
     resetOnCreate: {
       type: Boolean,
       default: true
+    },
+    allowNew:{
+      // Create a new default item if fetch by Id fails. 
+      type:Boolean,
+      default: false
     }
   },
   computed: {
     isNewItem() {
-      return !this.item || !this.item[this.idField];
+      return !this.item || !this.item[this.idField] ||this.forceNew;
     }
   },
   methods: {
@@ -87,6 +89,12 @@ export default {
           self.fetchError = false;
         })
         .catch(err => {
+          if(this.allowNew && err.name==='NotFound'){
+            this.forceNew = true;
+            console.error(`Item with id ${this.id} not found on service "${this.service}". Creating default item"`);
+            this.item = this.defaultItem;
+            return;
+          }
           console.error(`Error fetching item from "${this.service}"`, err);
           self.fetchingItem = false;
           self.fetchError = true;
@@ -105,13 +113,13 @@ export default {
         .patch(id, { ...this.item })
         .then(res => {
           self.saving = false;
-          self.error = false;
+          self.saveError = false;
           this.$emit("saved", res);
           return res;
         })
         .catch(err => {
           self.saving = false;
-          self.error = err;
+          self.saveError = err;
           this.$emit("error", err);
         });
     },
@@ -120,13 +128,14 @@ export default {
       this.error = false;
       this.saving = true;
       const self = this;
-
+      this.forceNew = false;
+      
       this.feathers.app
         .service(this.service)
         .create({ ...this.item })
         .then(res => {
           self.saving = false;
-          self.error = false;
+          self.saveError = false;
           if (self.resetOnCreate) {
             self.reset();
           }
@@ -135,7 +144,7 @@ export default {
         })
         .catch(err => {
           self.saving = false;
-          self.error = err;
+          self.saveError = err;
           this.$emit("error", err);
         });
     },
