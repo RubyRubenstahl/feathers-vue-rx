@@ -7,7 +7,7 @@
     </template>
 
     <template v-if="initialLoadComplete && !empty">
-      <slot name="loaded" :data="data" :service="service">
+      <slot name="loaded" :data="data" :service="service" :clear="clear">
         {{ data }}
       </slot>
     </template>
@@ -20,7 +20,7 @@
 
     <template v-if="empty">
       <slot name="empty" :data="data" :service="service"
-        ><component :is="feathers.defaultEmptyComponent"
+        ><component :is="feathers.defaultEmptyComponent" :service="service" :emptyMessage="emptyMessage"
       /></slot>
     </template>
     <slot></slot>
@@ -31,6 +31,7 @@ import { isNumber } from "util";
 import isEqual from "lodash.isequal";
 import uniqBy from "lodash.uniqby";
 import naturalCompare from "string-natural-compare";
+import unionBy from 'lodash.unionby'
 
 const isPaginated = res =>
   isNumber(res.total) && isNumber(res.skip) && isNumber(res.limit);
@@ -73,6 +74,15 @@ export default {
       // Hides default slots
       type: Boolean,
       default: false
+    },
+    mergeChanges:{
+      // Merge new data instead of replacing it. 
+      type: Boolean,
+      default: false
+    },
+    emptyMessage:{
+      type: String,
+      default: null
     }
   },
   mounted() {},
@@ -80,6 +90,12 @@ export default {
     this.querySubscription.unsubscribe();
   },
   methods: {
+        clear(){
+      this.data=null;
+      this.pending=false;
+      this.error = false;
+      this.paginated = false;
+    },
     runQuery() {
       this.pending = true;
       const service = this.app.service(this.service);
@@ -105,19 +121,24 @@ export default {
               this.history.push(["response", res, this]);
               this.intitialLoadComplete = true;
               this.paginated = isPaginated(res);
-              this.data = this.paginated ? res.data : res;
+              let data = this.paginated ? res.data : res;
 
               // Prevent duplicates that can appear in some situations
-              if (Array.isArray(this.data)) {
-                this.data = uniqBy(this.data, this.idField);
+              if (Array.isArray(data)) {
+                data = uniqBy(data, this.idField);
               }
-              if (this.sortBy && Array.isArray(this.data)) {
-                this.data.sort((a, b) =>
+              if (this.sortBy && Array.isArray(data)) {
+                data.sort((a, b) =>
                   naturalCompare(a[this.sortBy], b[this.sortBy], {
                     caseInsensitive: true
                   })
                 );
               }
+
+              // Merge data if  is enabled
+              const shouldMergeChanges = this.mergeChanges && Array.isArray(this.data) && Array.isArray(data);
+              this.data = shouldMergeChanges ? unionBy(data, this.data, this.idField) : data;
+
               this.$emit("loaded", res);
               this.pending = false;
               this.initialLoadComplete = true;
@@ -157,6 +178,7 @@ export default {
       return this.feathers.app;
     }
   },
+
   watch: {
     query: {
       handler: function query(newQuery, prevQuery) {
