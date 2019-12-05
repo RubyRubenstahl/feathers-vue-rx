@@ -1,6 +1,6 @@
 <template>
   <div>
-    <slot></slot>
+    <slot :feathers="feathers"></slot>
   </div>
 </template>
 <script>
@@ -85,8 +85,10 @@
             console.log("Login successful");
             this.feathers.user = res.user;
             this.feathers.authenticating = false;
-            this.feathers.authenticated = true;
-            localStorage.setItem("username", credentials.username);
+            if(res.user){
+              this.feathers.authenticated = true;
+              localStorage.setItem("username", credentials.username);
+            }
             //  this.$emit('login', this.user);
             return res.user;
           })
@@ -107,8 +109,10 @@
             console.log("Login successful");
             this.feathers.user = res.user;
             this.feathers.authenticating = false;
-            this.feathers.authenticated=true;
-            this.$emit('login', this.user);
+            if(res.user){
+              this.feathers.authenticated=true;
+              this.$emit('login', this.user);
+            }
             return res.user;
           })
           .catch(err => {
