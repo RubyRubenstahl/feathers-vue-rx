@@ -7,7 +7,7 @@
     </template>
 
     <template v-if="initialLoadComplete && !empty">
-      <slot name="loaded" :data="data" :service="service" :clear="clear">
+      <slot name="loaded" :data="data" :service="service" :clear="clear" :paginated="paginated" :pagination="pagination" :goNext="goNext" :goPrev="goPrev">
         {{ data }}
       </slot>
     </template>
@@ -83,6 +83,11 @@ export default {
     emptyMessage:{
       type: String,
       default: null
+    },
+    appendPages:{
+      type:Boolean,
+      default: false,
+
     }
   },
   mounted() {},
@@ -111,6 +116,13 @@ export default {
         ...this.params,
         query: { ...this.params.query, ...this.query }
       };
+      if(this.paginated){
+        params.query = {
+          ...params.query,
+          $skip: this.pagination.skip,
+          $limit: this.pagination.limit
+        }
+      }
 
       this.querySubscription = service
         .watch(this.ervice)
@@ -121,7 +133,26 @@ export default {
               this.history.push(["response", res, this]);
               this.intitialLoadComplete = true;
               this.paginated = isPaginated(res);
-              let data = this.paginated ? res.data : res;
+
+              if(this.paginated){
+                const isLastPage = res.skip + res.limit > res.total
+                const isFirstPage = res.skip===0;
+                const self = this;
+                const page =Math.floor(res.skip / res.limit)
+                this.pagination = {
+                  isFirstPage,
+                  isLastPage,
+                  total:res.total,
+                  skip:res.skip,
+                  limit: res.limit,
+                  page,
+                  pageCount: Math.floor(res.total/res.limit)+1,
+                  prevPage: isFirstPage ? 0:page+1,
+                  nextPage: isLastPage ? page :page+1,
+                }
+                this.pages[page] = res.data;
+              }
+              let data = this.paginated ? this.appendPages ? this.pages.flatMap(data=>data)  : res.data : res;
 
               // Prevent duplicates that can appear in some situations
               if (Array.isArray(data)) {
@@ -152,6 +183,14 @@ export default {
             console.error(`Error in ${this.service} find subscription`, err);
           }
         );
+    },
+    goNext(){
+      this.pagination.skip = this.pagination.nextPage*this.pagination.limit;
+      this.runQuery();
+    },
+    goPrev(){
+      this.pagination.skip = this.pagination.prevPage*this.pagination.limit;
+      this.runQuery();
     }
   },
   data() {
@@ -163,7 +202,11 @@ export default {
       querySubscription: null,
       timeout: false,
       data: null,
-      paginated: null
+      paginated: null,
+      pages:[],
+      pagination:{
+
+      }
     };
   },
 

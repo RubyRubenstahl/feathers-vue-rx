@@ -59,7 +59,7 @@
     data() {
       return {
         feathers:{
-          app: feathers(),
+          app: this.app || feathers(),
           authenticating: false,
           authenticated: false,
           user: null,
@@ -88,6 +88,7 @@
             if(res.user){
               this.feathers.authenticated = true;
               localStorage.setItem("username", credentials.username);
+              this.$emit('login', res.user);
             }
             //  this.$emit('login', this.user);
             return res.user;
@@ -111,7 +112,7 @@
             this.feathers.authenticating = false;
             if(res.user){
               this.feathers.authenticated=true;
-              this.$emit('login', this.user);
+              this.$emit('login', res.user);
             }
             return res.user;
           })
