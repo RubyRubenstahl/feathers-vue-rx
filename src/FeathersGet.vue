@@ -8,7 +8,7 @@
 
     <template v-if="!error && !empty">
       <slot name="loaded" :context="context" :data="data" :service="service">
-        {{ data }}
+        <VueJsonPretty :data="data">  </VueJsonPretty>
       </slot>
     </template>
 
@@ -24,10 +24,12 @@
 <script>
 import { isNumber } from "util";
 import isEqual from "lodash.isequal";
+import VueJsonPretty from 'vue-json-pretty';
 
   export default {
     name: "FeathersGet",
     inject: ["feathers"],
+    components: {VueJsonPretty},
     props: {
       id: {
         // ID of the item to get
@@ -94,7 +96,7 @@ import isEqual from "lodash.isequal";
       }
       this.querySubscription = service
         .watch(this.service)
-        .get(this.id)
+        .get(this.id, this.context.params)
         .subscribe(
           res => {
             setTimeout(() => {
@@ -136,6 +138,18 @@ import isEqual from "lodash.isequal";
     }
   },
   watch: {
+      query:{
+        handler: function query(newQuery, prevQuery) {
+        
+          if (!isEqual(newQuery, prevQuery)) {
+          if (this.querySubscription) {
+            this.querySubscription.unsubscribe();
+          }
+          this.runQuery();
+        }
+      },
+      immediate: true
+    },
     "feathers.authenticated"(isAuthenticated) {
       if (
         isAuthenticated &&
