@@ -225,11 +225,13 @@ export default {
   watch: {
     query: {
       handler: function query(newQuery, prevQuery) {
-        if (!isEqual(newQuery, prevQuery)) {
+        
+          if (!isEqual(newQuery, prevQuery)) {
           this.updating = true;
           if (this.querySubscription) {
             this.querySubscription.unsubscribe();
           }
+          this.pages = [];
           this.runQuery();
         }
       },
