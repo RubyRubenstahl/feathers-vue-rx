@@ -1,5 +1,5 @@
 <template>
-  <div v-if="feathers.authenticated">
+  <div v-if="feathers.authenticated && feathers.user.isVerified !==false">
     <slot></slot>
   </div>
 </template>

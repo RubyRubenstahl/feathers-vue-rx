@@ -68,9 +68,15 @@
           authenticationError: null,
           login: this.login,
           logout: this.logout,
+          verifyUser: this.verifyUser,
           defaultEmptyComponent: this.defaultEmptyComponent,
           defaultErrorComponent: this.defaultErrorComponent,
           defaultPendingComponent: this.defaultPendingComponent,
+          verificationError: null,
+          verifying:false,
+          resendVerification: this.resendVerification,
+          badToken: false
+
         }
       };
     },
@@ -122,8 +128,49 @@
             throw err;
           });
       },
+      async verifyUser(token){
+        this.feathers.verifying=true;
+        const data = {
+          action: 'verifySignupShort',
+          value:{
+          user: {username: this.feathers.user.username},
+          token
+          }
+        }
+        this.feathers.app.service('authManagement').create(data)
+        .then(user=>{
+          this.feathers.verifying=false;
+          this.$set(this.feathers,'user', user);
+          this.$set(this.feathers,'verificationError', null);
+          this.feathers.authenticated = true;
+          this.feathers.verificationError=null;
+          this.feathers.badToken = false;
+        })
+        .catch(err=>{
+          this.feathers.verifying = false;
+          this.feathers.verificationError=err;
+          const errorClass = err.errors && err.errors.$className
+          this.feathers.badToken = errorClass === 'verifyExpired' || errorClass==='badParam'
+          console.log(`User verification failed.`, err)
+        })
+      },
+      async resendVerification(){
+        this.feathers.badToken=false;
+        this.feathers.verificationError=false;
+        this.feathers.app.service('authManagement').create({ 
+          action: 'resendVerifySignup',
+          value:{username: this.feathers.user.username},
+          notifierOptions: {}, // options passed to options.notifier, e.g. {preferredComm: 'cellphone'}
+        }).catch(err=>{
+           this.$set(this.feathers,'verificationError', err);
+        }).then(res=>{
+          console.log('New token created')
+        })
+      },
+      
       async logout() {
         this.feathers.app.logout();
+        this.feathers.user = null;
         this.feathers.authenticated = false;
         this.feathers.authenticating = false;
         this.$emit('logout');

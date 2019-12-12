@@ -3,6 +3,7 @@ import FeathersFind from "./FeathersFind";
 import FeathersLogin from "./FeathersLogin";
 import FeathersAuthenticated from "./FeathersAuthenticated";
 import FeathersUnauthenticated from "./FeathersUnauthenticated";
+import FeathersUnverified from "./FeathersUnverified";
 import FeathersEdit from "./FeathersEdit";
 import FeathersGet from "./FeathersGet";
  
@@ -16,6 +17,7 @@ const FeathersVueEx = {
         Vue.component("FeathersUnauthenticated", FeathersUnauthenticated);
         Vue.component("FeathersEdit", FeathersEdit);
         Vue.component("FeathersGet", FeathersGet);
+        Vue.component("FeathersUnverified", FeathersUnverified);
         console.log('...feathers-vue-rx components registered');
     }
 }
