@@ -5,7 +5,7 @@
         name="form"
         :save="save"
         :item="item"
-        :reset="reset"
+        :reset="reset"  
         :isNewItem="isNewItem"
         :saving="saving"
         :fetchingItem="fetchingItem"
@@ -102,9 +102,10 @@ export default {
     },
     patchItem() {
       console.log("patching");
-      console.log(`Creating new item on ${this.service}`);
-      const id = this.item[this.idField];
+      const id = this.id;
+      console.log(`Patching item ${id} on ${this.service}`);
       delete this.item[this.idField]
+
       this.error = false;
       this.saving = true;
       const self = this;
