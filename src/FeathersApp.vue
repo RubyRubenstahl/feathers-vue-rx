@@ -75,7 +75,9 @@
           verificationError: null,
           verifying:false,
           resendVerification: this.resendVerification,
-          badToken: false
+          badToken: false,
+          sendPasswordResetCode: this.sendPasswordResetCode,
+          resetPassword: this.resetPassword
 
         }
       };
@@ -167,7 +169,21 @@
           console.log('New token created')
         })
       },
-      
+      async sendPasswordResetCode(email){
+              // send forgotten password notification
+           await this.feathers.app.service('authManagement').create({ 
+              action: 'sendResetPwd',
+              value: {email}, // {email}, {token: verifyToken}
+            }).catch(err=>console.error(`Error sending reset code`, err))
+      },
+      async resetPassword({user, token, password}){
+              // send forgotten password notification
+           await this.feathers.app.service('authManagement').create({ 
+              action: 'resetPwdShort',
+              value: {user, token, password}, // {email}, {token: verifyToken}
+            }).catch(err=>console.error(`Error resetting password`, err))
+            .then(res=>console.log(res))
+      },
       async logout() {
         this.feathers.app.logout();
         this.feathers.user = null;
