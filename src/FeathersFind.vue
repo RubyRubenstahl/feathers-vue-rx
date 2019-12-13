@@ -160,7 +160,7 @@ export default {
               }
               if (this.sortBy && Array.isArray(data)) {
                 data.sort((a, b) =>
-                  naturalCompare(a[this.sortBy], b[this.sortBy], {
+                  naturalCompare(a[this.sortBy]||'', b[this.sortBy]||'', {
                     caseInsensitive: true
                   })
                 );
