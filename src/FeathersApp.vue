@@ -194,7 +194,7 @@
             value: { user, token, password } // {email}, {token: verifyToken}
           })
           .catch(err => console.error(`Error resetting password`, err))
-          .then(res => console.log(res));
+          .then(res => console.log('Password reset successful'));
       },
       async logout() {
         this.feathers.app.logout();
