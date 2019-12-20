@@ -6,6 +6,8 @@ import FeathersUnauthenticated from "./FeathersUnauthenticated";
 import FeathersUnverified from "./FeathersUnverified";
 import FeathersEdit from "./FeathersEdit";
 import FeathersGet from "./FeathersGet";
+import FeathersLocalService from "./FeathersLocalService";
+import DelayRender from "./DelayRender";
  
 const FeathersVueEx = {
     install(Vue, options) {
@@ -18,6 +20,8 @@ const FeathersVueEx = {
         Vue.component("FeathersEdit", FeathersEdit);
         Vue.component("FeathersGet", FeathersGet);
         Vue.component("FeathersUnverified", FeathersUnverified);
+        Vue.component("FeathersLocalService", FeathersLocalService);
+        Vue.component("DelayRender", DelayRender);
         console.log('...feathers-vue-rx components registered');
     }
 }
