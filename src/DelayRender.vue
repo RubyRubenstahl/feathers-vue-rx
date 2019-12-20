@@ -10,7 +10,7 @@ export default {
     props:{
         delayTime:{
             type: Number,
-            default: 200,
+            default: 500,
             description: 'Delay time in ms'
         }
     },
