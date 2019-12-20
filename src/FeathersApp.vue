@@ -13,6 +13,7 @@
   import FeathersError from "./FeathersError";
   import FeathersPending from "./FeathersPending";
   import reactive from "feathers-reactive";
+  import AuthManagement from 'feathers-authentication-management/lib/client';
   console.log("Registering feathersApp");
   export default {
     name: "FeathersApp",
@@ -49,6 +50,7 @@
 
       this.feathers.app.configure(reactive({ idField: this.defaultIdField }));
       this.feathers.app.configure(auth({}));
+      this.$set(this.feathers, "authManagement", new AuthManagement(this.feathers.app)); 
 
       window.addEventListener("offline", () => (this.feathers.online = false));
       window.addEventListener("online", () => (this.feathers.online = true));
@@ -62,6 +64,7 @@
           app: this.app || feathers(),
           authenticating: false,
           authenticated: false,
+          authManagement: null,
           user: null,
           connected: false,
           online: navigator ? navigator.onLine : true,
@@ -77,7 +80,7 @@
           resendVerification: this.resendVerification,
           badToken: false,
           sendPasswordResetCode: this.sendPasswordResetCode,
-          resetPassword: this.resetPassword
+          resetPassword: this.resetPassword,
         }
       };
     },
@@ -158,7 +161,7 @@
             console.log(`User verification failed.`, err);
           });
       },
-      async resendVerification() {
+      async resendVerification(notifierOptions={}) {
         this.feathers.badToken = false;
         this.feathers.verificationError = false;
         this.feathers.app
@@ -166,7 +169,7 @@
           .create({
             action: "resendVerifySignup",
             value: { username: this.feathers.user.username },
-            notifierOptions: {} // options passed to options.notifier, e.g. {preferredComm: 'cellphone'}
+            notifierOptions // options passed to options.notifier, e.g. {preferredComm: 'cellphone'}
           })
           .catch(err => {
             this.$set(this.feathers, "verificationError", err);
@@ -175,16 +178,12 @@
             console.log("New token created");
           });
       },
-      async sendPasswordResetCode(email) {
+      async sendPasswordResetCode(user, notifierOptions) {
         // send forgotten password notification
-        await this.feathers.app
-          .service("authManagement")
-          .create({
-            action: "sendResetPwd",
-            value: { email } // {email}, {token: verifyToken}
-          })
+        await this.feathers.authManagement.sendResetPwd(user, notifierOptions)
           .catch(err => console.error(`Error sending reset code`, err));
       },
+      
       async resetPassword({ user, token, password }) {
         // send forgotten password notification
         await this.feathers.app
