@@ -2,7 +2,7 @@
   <section v-if="!invisible">
     <template v-if="!error && pending">
       <slot name="loading" :context="context" :data="data" :service="service">
-        <component :is="feathers.defaultPendingComponent" />
+        <component :is="pendingComponent || feathers.defaultPendingComponent" />
       </slot>
     </template>
 
@@ -66,6 +66,9 @@ import VueJsonPretty from 'vue-json-pretty';
       // Hides default slots
       type: Boolean,
       default: false
+    },
+        pendingComponent:{
+      default:null
     }
   },
   mounted() {

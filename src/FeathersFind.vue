@@ -2,7 +2,7 @@
   <div v-if="!invisible" style="display:contents">
     <template v-if="!initialLoadComplete && !error && pending">
       <slot name="loading" :data="data" :service="service">
-        <component :is="feathers.defaultPendingComponent" />
+        <component :is="pendingComponent || feathers.defaultPendingComponent" />
       </slot>
     </template>
 
@@ -13,7 +13,7 @@
     </template>
 
     <template v-if="!!error">
-      <slot name="error" :data="data" :service="service">
+      <slot name="error" :data="data" :service="service" :error="error">
         <component :is="feathers.defaultErrorComponent" :error="error" />
       </slot>
     </template>
@@ -88,6 +88,9 @@ export default {
       type:Boolean,
       default: false,
 
+    },
+    pendingComponent:{
+      default:null
     }
   },
   mounted() {},
