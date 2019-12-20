@@ -1,9 +1,11 @@
 <template>
   <section v-if="!invisible">
     <template v-if="!error && pending">
-      <slot name="loading" :context="context" :data="data" :service="service">
-        <component :is="feathers.defaultPendingComponent" />
-      </slot>
+      <DelayRender>
+        <slot name="loading" :context="context" :data="data" :service="service">
+          <component :is="feathers.defaultPendingComponent" />
+        </slot>
+      </DelayRender>
     </template>
 
     <template v-if="!error && !empty">
