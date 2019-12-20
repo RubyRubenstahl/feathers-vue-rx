@@ -1,9 +1,11 @@
 <template>
   <div v-if="!invisible" style="display:contents">
     <template v-if="!initialLoadComplete && !error && pending">
-      <slot name="loading" :data="data" :service="service">
-        <component :is="feathers.defaultPendingComponent" />
-      </slot>
+      <DelayRender>
+        <slot name="loading" :data="data" :service="service">
+          <component :is="feathers.defaultPendingComponent" />
+        </slot>
+      </DelayRender>
     </template>
 
     <template v-if="initialLoadComplete && !empty">
