@@ -111,6 +111,12 @@
           });
       },
       reAuthenticate() {
+        const hasToken = !!localStorage.getItem('feathers-jwt')
+        if(!hasToken){
+          return;
+          console.log('No jwt found. Skipping authentication attempt')
+        }
+        
         console.log("Attempting to re-authenticate");
         this.feathers.authenticating = true;
         this.feathers.authenticated = false;
