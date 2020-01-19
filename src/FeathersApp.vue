@@ -212,6 +212,7 @@
         socket.on("connect", () => {
           console.log("connected");
           this.feathers.connected = true;
+          this.feathers.app.emit('connected');
           this.reAuthenticate();
         });
         socket.on("disconnect", () => {
