@@ -89,6 +89,7 @@
         console.log("Logging in");
         this.feathers.authenticating = true;
         this.feathers.authenticated = false;
+        this.feathers.authenticationError = null;
         return this.feathers.app
           .authenticate({ strategy, ...credentials })
           .then(res => {
@@ -111,7 +112,8 @@
           });
       },
       reAuthenticate() {
-        const hasToken = !!localStorage.getItem('feathers-jwt')
+        const hasToken = !!localStorage.getItem('feathers-jwt');
+        this.feathers.authenticationError = null;
         if(!hasToken){
           return;
           console.log('No jwt found. Skipping authentication attempt')
