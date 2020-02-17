@@ -229,6 +229,7 @@ export default {
 
   watch: {
     query: {
+      deep:true,
       handler: function query(newQuery, prevQuery) {
         
           if (!isEqual(newQuery, prevQuery)) {
