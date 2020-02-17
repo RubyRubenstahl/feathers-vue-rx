@@ -237,8 +237,8 @@ export default {
             this.querySubscription.unsubscribe();
           }
           this.pages = [];
-          this.data=[];
-          this.runQuery();
+          this.pagination={}
+          
         }
       },
       immediate: true
