@@ -170,6 +170,7 @@
           });
       },
       async resendVerification(notifierOptions={}) {
+        this.feathers.authenticationError = null;
         this.feathers.badToken = false;
         this.feathers.verificationError = false;
         this.feathers.app
@@ -188,12 +189,14 @@
       },
       async sendPasswordResetCode(user, notifierOptions) {
         // send forgotten password notification
+        this.feathers.authenticationError = null;
         await this.feathers.authManagement.sendResetPwd(user, notifierOptions)
           .catch(err => console.error(`Error sending reset code`, err));
       },
       
       async resetPassword({ user, token, password }) {
         // send forgotten password notification
+        this.feathers.authenticationError = null;
         await this.feathers.app
           .service("authManagement")
           .create({
@@ -208,6 +211,7 @@
         this.feathers.user = null;
         this.feathers.authenticated = false;
         this.feathers.authenticating = false;
+        this.feathers.authenticationError = null;
         this.$emit("logout");
       },
       registerSocketEventHandlers(socket) {
