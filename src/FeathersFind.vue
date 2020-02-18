@@ -229,17 +229,18 @@ export default {
 
   watch: {
     query: {
-      deep:true,
       handler: function query(newQuery, prevQuery) {
         
           if (!isEqual(newQuery, prevQuery)) {
-          this.updating = true;
-          if (this.querySubscription) {
-            this.querySubscription.unsubscribe();
-          }
-          this.pages = [];
-          this.pagination={}
-          
+            this.updating = true;
+            if (this.querySubscription) {
+              this.querySubscription.unsubscribe();
+            }
+            this.pages = [];
+            this.$set(this, 'pagination', {});
+            this.$set(this, 'data', []);
+            // this.data=[];
+            this.runQuery();
         }
       },
       immediate: true
