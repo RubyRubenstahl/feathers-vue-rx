@@ -143,8 +143,8 @@ import VueJsonPretty from 'vue-json-pretty';
     }
   },
   watch: {
-      query: {
-        deep: true,
+      query:{
+        deep:true,
         immediate: true,
         handler: function query(newQuery, prevQuery) {
           if (!isEqual(newQuery, prevQuery)) {
@@ -153,7 +153,7 @@ import VueJsonPretty from 'vue-json-pretty';
           }
           this.runQuery();
         }
-        }
+      },
     },
     "feathers.authenticated"(isAuthenticated) {
       if (
