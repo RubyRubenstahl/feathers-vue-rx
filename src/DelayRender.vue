@@ -15,7 +15,6 @@ export default {
         }
     },
     mounted(){
-        console.log('delaying render')
         this.timer = setTimeout(()=>{
             this.visible = true;
         }, this.delayTime);
