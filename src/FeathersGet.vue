@@ -106,7 +106,7 @@ import VueJsonPretty from 'vue-json-pretty';
           res => {
             setTimeout(() => {
               this.history.push(["response", res, this]);
-              this.data = res;
+              this.$set(this,'data',  res);
               this.pending = false;
               this.$emit("loaded", res);
             }, 0);
@@ -145,7 +145,7 @@ import VueJsonPretty from 'vue-json-pretty';
   watch: {
       query:{
         deep:true,
-        immediate: true,
+          immediate: true,
         handler: function query(newQuery, prevQuery) {
           if (!isEqual(newQuery, prevQuery)) {
           if (this.querySubscription) {
